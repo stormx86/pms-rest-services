@@ -36,7 +36,7 @@
                             <th scope="row" onclick="location.href='/projects/${project.id}'">${project.id}</th>
                             <td onclick="location.href='/projects/${project.id}'">${project.createdAt}</td>
                             <td onclick="location.href='/projects/${project.id}'">${project.title}</td>
-                            <td onclick="location.href='/projects/${project.id}'">${project.status}</td>
+                            <td onclick="location.href='/projects/${project.id}'">${project.getStatus().getStatusName()}</td>
                             <td onclick="location.href='/projects/${project.id}'">${project.roleUser.ProjectManager}</td>
                             <td onclick="location.href='/projects/${project.id}'">${project.roleUser.Creator}</td>
 

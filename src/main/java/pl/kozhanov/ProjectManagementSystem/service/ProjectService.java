@@ -6,6 +6,7 @@ import pl.kozhanov.ProjectManagementSystem.domain.Project;
 import pl.kozhanov.ProjectManagementSystem.domain.User;
 import pl.kozhanov.ProjectManagementSystem.domain.UserProjectRoleLink;
 import pl.kozhanov.ProjectManagementSystem.repos.ProjectRepo;
+import pl.kozhanov.ProjectManagementSystem.repos.ProjectStatusRepo;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -21,6 +22,8 @@ public class ProjectService {
     UserService userService;
     @Autowired
     ProjectRoleService projectRoleService;
+    @Autowired
+    ProjectStatusService projectStatusService;
 
     public List<Project> findAll(){
         return  projectRepo.findAll();
@@ -31,7 +34,7 @@ public class ProjectService {
     public List<ProjectView> findAllByOrderByCreatedAtDesc(){return projectRepo.findAllByOrderByCreatedAtDesc();}
 
     public void addProject(String title, String description, String pmUser){
-        Project newProject = new Project(LocalDateTime.now(), title, description, "Waiting");
+        Project newProject = new Project(LocalDateTime.now(), title, description, projectStatusService.findByStatusName("Waiting"));
         Set<UserProjectRoleLink> uprlSet = new HashSet<>();
         //after authorization implementation change Anton to currently authorized uzer
         uprlSet.add(new UserProjectRoleLink(userService.findByUsername("Anton"), newProject, projectRoleService.findByRoleName("Creator")));

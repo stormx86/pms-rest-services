@@ -25,7 +25,6 @@ public class ProjectController {
     public String showProjects(Map<String, Object> model){
         List<ProjectView> projects = projectService.findAllByOrderByCreatedAtDesc();
         model.put("projects", projects);
-        //System.out.println(userService.findByUsernameLike("us"));
         return "projects";
     }
 
@@ -60,7 +59,7 @@ public class ProjectController {
     public String addProject(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("pmUser") String pmUser){
+           @RequestParam("pmUser") String pmUser){
         projectService.addProject(title, description, pmUser);
 
         return "redirect:/projects";

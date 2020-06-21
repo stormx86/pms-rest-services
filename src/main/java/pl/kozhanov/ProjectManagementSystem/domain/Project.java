@@ -13,11 +13,15 @@ public class Project {
     private LocalDateTime createdAt;
     private String title;
     private String description;
-    private String status;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="status_id", referencedColumnName = "id")
+    private ProjectStatus status;
+
     @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
-    public Project(LocalDateTime createdAt, String title, String description, String status) {
+    public Project(LocalDateTime createdAt, String title, String description, ProjectStatus status) {
         this.createdAt = createdAt;
         this.title = title;
         this.description = description;
@@ -51,11 +55,11 @@ public class Project {
         this.description = description;
     }
 
-    public String getStatus() {
+    public ProjectStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProjectStatus status) {
         this.status = status;
     }
 

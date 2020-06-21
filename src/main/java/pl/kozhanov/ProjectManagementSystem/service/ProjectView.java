@@ -1,5 +1,6 @@
 package pl.kozhanov.ProjectManagementSystem.service;
 
+import pl.kozhanov.ProjectManagementSystem.domain.ProjectStatus;
 import pl.kozhanov.ProjectManagementSystem.domain.UserProjectRoleLink;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ public interface ProjectView {
     LocalDateTime getCreatedAt();
     String getTitle();
     String getDescription();
-    String getStatus();
+    ProjectStatus getStatus();
     Set<UserProjectRoleLink> getUserProjectRoleLink();
 
     default Map<String, String> getRoleUser(){
