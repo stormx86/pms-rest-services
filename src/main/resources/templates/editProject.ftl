@@ -24,6 +24,8 @@
         } );
     </script>
 
+
+
 </head>
 <body>
 
@@ -36,12 +38,12 @@
         </form>
         <div class="col-2">
             <label style="font-weight:bold; font-size:16px">Project manager:</label><br>
-            <input id="users" type="text" form="editProject" name="pmUser" value="${project.roleUser.ProjectManager}"><br><br><br>
+            <input class="form-control" id="users" type="text" form="editProject" name="pmUser" value="${project.roleUser.ProjectManager}"><br><br>
             <button type="submit" class="btn btn-primary btn-sm" form="editProject">Save</button>
         </div>
         <div class="col-6">
             <label style="font-weight:bold; font-size:16px">Project title:</label><br>
-            <input type="text" form="editProject" name="title" value="${project.title}" style="width: 80%"><br><br>
+            <input class="form-control" type="text" form="editProject" name="title" value="${project.title}" style="width: 80%"><br><br>
             <label style="font-weight:bold; font-size:16px">Description:</label><br>
             <textarea class="form-control" name="description" form="editProject" rows="12" style="width: 80%">${project.description}</textarea>
         </div>

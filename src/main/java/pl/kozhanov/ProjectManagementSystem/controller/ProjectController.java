@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pl.kozhanov.ProjectManagementSystem.service.ProjectService;
+import pl.kozhanov.ProjectManagementSystem.service.ProjectStatusService;
 import pl.kozhanov.ProjectManagementSystem.service.ProjectView;
 import pl.kozhanov.ProjectManagementSystem.service.UserService;
 
@@ -21,6 +22,9 @@ public class ProjectController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ProjectStatusService projectStatusService;
+
     @GetMapping
     public String showProjects(Map<String, Object> model){
         List<ProjectView> projects = projectService.findAllByOrderByCreatedAtDesc();
@@ -31,6 +35,7 @@ public class ProjectController {
     @GetMapping("{projectId}")
     public String openProject(@PathVariable Integer projectId, Model model){
             model.addAttribute("project", projectService.findById(projectId));
+            model.addAttribute("statuses", projectStatusService.findAllStatuses());
         return "openProject";
     }
 
@@ -71,11 +76,22 @@ public class ProjectController {
             @PathVariable Integer projectId,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("pmUser") String pmUser){
+            @RequestParam("pmUser") String pmUser) {
         projectService.saveProject(projectId, title, description, pmUser);
 
         return "redirect:/projects/{projectId}";
     }
+
+    @PostMapping("changeStatus")
+    @ResponseBody
+    public String changeProjectStatus(
+            @RequestParam("id") Integer projectId,
+            @RequestParam("status") String status) {
+        projectService.changeProjectStatus(projectId, status);
+
+        return "Status changed!";
+    }
+
 
 
 }

@@ -45,7 +45,6 @@ public class ProjectService {
     }
 
     public void saveProject(Integer id, String title, String description, String pmUser){
-
         Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
@@ -55,7 +54,11 @@ public class ProjectService {
         projectRepo.save(project);
     }
 
-
+    public void changeProjectStatus(Integer id, String status){
+        Project project = projectRepo.getById(id);
+        project.setStatus(projectStatusService.findByStatusName(status));
+        projectRepo.save(project);
+    }
 
 }
 

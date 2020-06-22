@@ -34,12 +34,12 @@
         </form>
         <div class="col-2">
             <label style="font-weight:bold; font-size:16px">Project manager:</label><br>
-            <input id="users" type="text" form="createProject" name="pmUser"><br><br><br>
+            <input class="form-control" id="users" type="text" form="createProject" name="pmUser"><br><br><br>
             <button type="submit" class="btn btn-primary btn-sm" form="createProject">Create</button>
         </div>
         <div class="col-6">
             <label style="font-weight:bold; font-size:16px">Project title:</label><br>
-            <input type="text" name="title" form="createProject" style="width: 80%"><br><br>
+            <input class="form-control" type="text" name="title" form="createProject" style="width: 80%"><br><br>
             <label style="font-weight:bold; font-size:16px">Description:</label><br>
             <textarea class="form-control" name="description" form="createProject" rows="12" style="width: 80%"></textarea>
         </div>

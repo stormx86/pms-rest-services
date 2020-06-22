@@ -19,7 +19,7 @@
         <br>
         <div class="row">
             <div class="col">
-                <table class="table table-hover table-bordered table-striped">
+                <table class="table table-hover table-bordered">
                     <thead class="thead-dark">
                     <tr>
                         <th style="width: 8%" scope="col">Project #</th>
