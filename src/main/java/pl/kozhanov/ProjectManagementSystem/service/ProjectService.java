@@ -9,9 +9,7 @@ import pl.kozhanov.ProjectManagementSystem.repos.ProjectRepo;
 import pl.kozhanov.ProjectManagementSystem.repos.ProjectStatusRepo;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ProjectService {
@@ -44,13 +42,33 @@ public class ProjectService {
         projectRepo.save(newProject);
     }
 
-    public void saveProject(Integer id, String title, String description, String pmUser){
+    public void saveProject(Integer id, String title, String description, Map<String, String> roleUser){
+        List<String> roles = new ArrayList<>();
+        List<String> users = new ArrayList<>();
+        Map<String, String> roleUserTotal = new HashMap<>();
+        for(String key :roleUser.keySet()) {
+            if(key.startsWith("role_")) {
+                roles.add(roleUser.get(key));
+            }
+            if(key.startsWith("user_")) {
+                users.add(roleUser.get(key));
+            }
+        }
+        for(int i=0; i<roles.size(); i++ )
+        {
+            roleUserTotal.put(roles.get(i), users.get(i));
+        }
+
         Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
-        // in case adding more roles to the project there is an option to get here Map<role, user(name)> and save one by one
-        project.getUserProjectRoleLink().stream().forEach(
-                a ->{if (a.getProjectRoles().getRoleName().equals("ProjectManager")) {a.setUser(userService.findByUsername(pmUser));}});
+        project.getUserProjectRoleLink().clear();
+        //Set<UserProjectRoleLink> uprlSet = new HashSet<>();
+        for(String key:roleUserTotal.keySet())
+            {
+                project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(roleUserTotal.get(key)), project, projectRoleService.findByRoleName(key)));
+            }
+                //project.setUserProjectRoleLink(uprlSet);
         projectRepo.save(project);
     }
 

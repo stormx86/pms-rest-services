@@ -9,6 +9,8 @@ import pl.kozhanov.ProjectManagementSystem.service.ProjectStatusService;
 import pl.kozhanov.ProjectManagementSystem.service.ProjectView;
 import pl.kozhanov.ProjectManagementSystem.service.UserService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,9 +78,8 @@ public class ProjectController {
             @PathVariable Integer projectId,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("pmUser") String pmUser) {
-        projectService.saveProject(projectId, title, description, pmUser);
-
+            @RequestParam Map<String, String> roleUser) {
+        projectService.saveProject(projectId, title, description, roleUser);
         return "redirect:/projects/{projectId}";
     }
 

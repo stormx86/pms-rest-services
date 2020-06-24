@@ -18,7 +18,7 @@ public class Project {
     @JoinColumn(name="status_id", referencedColumnName = "id")
     private ProjectStatus status;
 
-    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
     public Project(LocalDateTime createdAt, String title, String description, ProjectStatus status) {

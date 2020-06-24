@@ -16,12 +16,23 @@
     <title>Edit project</title>
 
     <script>
-        $( function() {
-            $( "#users" ).autocomplete({
-                source: "/projects/getUserNames",
-                minLength: 2
-            });
-        } );
+        $(document).ready(function () {
+            $(".form-control").each(function () {
+                $(this).autocomplete({
+                    source: "/projects/getUserNames",
+                    minLength: 2
+                });
+            })
+        });
+    </script>
+
+    <#--Set selected role in <select> - ADVANCED VERSION-->
+    <script>
+        $(document).ready(function () {
+        $("select.form-control").each(function() {
+            var specifiedID = this.id;
+            $(this).val(specifiedID);})
+        });
     </script>
 
 
@@ -36,9 +47,27 @@
     <div class="row">
         <form id="editProject" method="post" action="/projects/save/${project.id}">
         </form>
-        <div class="col-2">
-            <label style="font-weight:bold; font-size:16px">Project manager:</label><br>
-            <input class="form-control" id="users" type="text" form="editProject" name="pmUser" value="${project.roleUser.ProjectManager}"><br><br>
+        <div class="col-3">
+
+            <table class="table table-sm table-bordered">
+                <thead>
+                <label style="font-weight:bold; font-size:16px">Project members:</label><br>
+                </thead>
+                <tbody>
+                <#list project.roleUser?keys as key>
+                    <tr>
+                        <td>
+                            <select form="editProject" class="form-control" id="${key}" name="role_${key}">
+                                <#list project.roleUser?keys as key>
+                                    <option value="${key}">${key}</option>
+                                </#list>
+                            </select></td>
+                        <td><input class="form-control" id="user_member" type="text" form="editProject" name="user_${project.roleUser[key]}" value="${project.roleUser[key]}"></td>
+                    </tr>
+                </#list>
+                </tbody>
+            </table>
+
             <button type="submit" class="btn btn-primary btn-sm" form="editProject">Save</button>
         </div>
         <div class="col-6">
@@ -47,7 +76,6 @@
             <label style="font-weight:bold; font-size:16px">Description:</label><br>
             <textarea class="form-control" name="description" form="editProject" rows="12" style="width: 80%">${project.description}</textarea>
         </div>
-        </form>
     </div>
 </div>
 
