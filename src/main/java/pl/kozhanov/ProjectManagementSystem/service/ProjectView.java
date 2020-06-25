@@ -4,9 +4,7 @@ import pl.kozhanov.ProjectManagementSystem.domain.ProjectStatus;
 import pl.kozhanov.ProjectManagementSystem.domain.UserProjectRoleLink;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public interface ProjectView {
 
@@ -17,10 +15,11 @@ public interface ProjectView {
     ProjectStatus getStatus();
     Set<UserProjectRoleLink> getUserProjectRoleLink();
 
-    default Map<String, String> getRoleUser(){
-        Map<String, String> map_ru = new HashMap<>();
-        getUserProjectRoleLink().stream().forEach(a -> map_ru.put(a.getProjectRoles().getRoleName(), a.getUser().getUsername()));
-        return map_ru;
+    default List<String> getRoleUser(){
+        List<String> roleUserList = new ArrayList<>();
+        getUserProjectRoleLink().stream().forEach(a -> roleUserList.add(a.getProjectRoles().getRoleName() + ":" + a.getUser().getUsername()));
+        Collections.sort(roleUserList);
+        return roleUserList;
     }
 
 }

@@ -31,6 +31,7 @@
                 success: function(response){
                     $("#status_success").empty();
                     $("#status_success").append(response);
+                    $("#status_success").delay(2000).fadeOut("slow", "swing");
                 }
             });
         }
@@ -64,9 +65,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <#list project.roleUser?keys as key>
+                        <#list project.roleUser as roleUser>
                             <tr>
-                                <td>${key} : ${project.roleUser[key]}</td>
+                                <td>${roleUser?keep_before(":")} : ${roleUser?keep_after(":")}</td>
                             </tr>
                         </#list>
                         </tbody>

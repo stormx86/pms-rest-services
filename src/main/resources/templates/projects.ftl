@@ -37,8 +37,20 @@
                             <td onclick="location.href='/projects/${project.id}'">${project.createdAt}</td>
                             <td onclick="location.href='/projects/${project.id}'">${project.title}</td>
                             <td onclick="location.href='/projects/${project.id}'">${project.getStatus().getStatusName()}</td>
-                            <td onclick="location.href='/projects/${project.id}'">${project.roleUser.ProjectManager}</td>
-                            <td onclick="location.href='/projects/${project.id}'">${project.roleUser.Creator}</td>
+                            <td onclick="location.href='/projects/${project.id}'">
+                                <#list project.roleUser as temp>
+                                    <#if temp?index_of("ProjectManager") != -1>
+                                        ${temp?keep_after(":")}
+                                    </#if>
+                                </#list>
+                            </td>
+                            <td onclick="location.href='/projects/${project.id}'">
+                                <#list project.roleUser as temp>
+                                    <#if temp?index_of("Creator") != -1>
+                                        ${temp?keep_after(":")}
+                                    </#if>
+                                </#list>
+                            </td>
 
                         </tr>
                     <#else>

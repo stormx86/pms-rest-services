@@ -16,12 +16,10 @@
     <title>Edit project</title>
 
     <script>
-        $(document).ready(function () {
+        var autocompl_opt = {source: "/projects/getUserNames", minLength: 2};
+        $(document).ready(function autocompleteReady () {
             $(".form-control").each(function () {
-                $(this).autocomplete({
-                    source: "/projects/getUserNames",
-                    minLength: 2
-                });
+                $(this).autocomplete(autocompl_opt);
             })
         });
     </script>
@@ -36,6 +34,50 @@
     </script>
 
 
+    <script>
+        function saveProject() {
+            var roles = [], users = [], object = {};
+            $("select").each(function () {
+               roles.push($(this).val());
+            })
+            $('input[name="userMember"]').each(function(){
+                users.push($(this).val());
+            })
+            var title = $('input[name="title"]').val();
+            var description =$('textarea[name="description"]').val();
+            $.ajax({
+                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                url: "/projects/save",
+                type: "POST",
+                data: {id: ${project.getId()}, title: title, description: description, roles: roles, users: users},
+                success: function(response){
+                    $("#save_success").empty();
+                    $("#save_success").append(response);
+                    $("#save_success").delay(2000).fadeOut("slow", "swing");
+                }
+            })
+        }
+    </script>
+
+    <#--Addin new select with roles and users-->
+    <script>
+        $(document).ready(function () {
+            $("#add_role").click(function () {
+               var markup = $("<tr><td><select class=\"form-control\" name=\"role\">\n" +
+                    "                                <#list existingRoles as er>\n" +
+                    "                                    <option value=\"${er}\">${er}</option>\n" +
+                    "                                </#list>\n" +
+                    "                            </select></td><td><input class=\"form-control\" id=\"user_member\" type=\"text\"  name=\"userMember\" ></td></tr>");
+                tableBody = $("#tb_roles tbody");
+                $(".form-control", markup).autocomplete(autocompl_opt);
+                tableBody.append(markup);
+
+
+
+            });
+        });
+    </script>
+
 
 </head>
 <body>
@@ -45,36 +87,37 @@
     <br>
     <h3>Edit project</h3>
     <div class="row">
-        <form id="editProject" method="post" action="/projects/save/${project.id}">
-        </form>
+
         <div class="col-3">
 
-            <table class="table table-sm table-bordered">
+            <table id="tb_roles" class="table table-sm table-bordered">
                 <thead>
                 <label style="font-weight:bold; font-size:16px">Project members:</label><br>
                 </thead>
                 <tbody>
-                <#list project.roleUser?keys as key>
+                <#list project.roleUser as ru>
                     <tr>
                         <td>
-                            <select form="editProject" class="form-control" id="${key}" name="role_${key}">
-                                <#list project.roleUser?keys as key>
-                                    <option value="${key}">${key}</option>
+                            <select  class="form-control" id="${ru?keep_before(":")}" name="role">
+                                <#list existingRoles as er>
+                                    <option value="${er}">${er}</option>
                                 </#list>
-                            </select></td>
-                        <td><input class="form-control" id="user_member" type="text" form="editProject" name="user_${project.roleUser[key]}" value="${project.roleUser[key]}"></td>
+                            </select>
+                        </td>
+                        <td><input class="form-control" id="user_member" type="text"  name="userMember" value="${ru?keep_after(":")}"></td>
                     </tr>
                 </#list>
                 </tbody>
             </table>
-
-            <button type="submit" class="btn btn-primary btn-sm" form="editProject">Save</button>
+            <button id="add_role" class="btn btn-primary btn-sm">Add role</button><br><br>
+            <button onclick="saveProject()" class="btn btn-success btn-sm">Save</button><br>
+            <span style="font-size: 12px" id="save_success" class="badge badge-success"></span>
         </div>
         <div class="col-6">
             <label style="font-weight:bold; font-size:16px">Project title:</label><br>
-            <input class="form-control" type="text" form="editProject" name="title" value="${project.title}" style="width: 80%"><br><br>
+            <input class="form-control" type="text" name="title" value="${project.title}" style="width: 80%"><br><br>
             <label style="font-weight:bold; font-size:16px">Description:</label><br>
-            <textarea class="form-control" name="description" form="editProject" rows="12" style="width: 80%">${project.description}</textarea>
+            <textarea class="form-control" name="description"  rows="12" style="width: 80%">${project.description}</textarea>
         </div>
     </div>
 </div>

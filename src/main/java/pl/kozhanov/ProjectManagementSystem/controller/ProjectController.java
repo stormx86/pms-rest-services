@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import pl.kozhanov.ProjectManagementSystem.service.ProjectService;
-import pl.kozhanov.ProjectManagementSystem.service.ProjectStatusService;
-import pl.kozhanov.ProjectManagementSystem.service.ProjectView;
-import pl.kozhanov.ProjectManagementSystem.service.UserService;
+import pl.kozhanov.ProjectManagementSystem.service.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +24,9 @@ public class ProjectController {
     @Autowired
     ProjectStatusService projectStatusService;
 
+    @Autowired
+    ProjectRoleService projectRoleService;
+
     @GetMapping
     public String showProjects(Map<String, Object> model){
         List<ProjectView> projects = projectService.findAllByOrderByCreatedAtDesc();
@@ -44,6 +44,7 @@ public class ProjectController {
     @GetMapping("edit/{projectId}")
     public String editProject(@PathVariable Integer projectId, Model model) {
         model.addAttribute("project", projectService.findById(projectId));
+        model.addAttribute("existingRoles", projectRoleService.findAllRoles());
         return "editProject";
     }
 
@@ -73,14 +74,18 @@ public class ProjectController {
     }
 
 
-    @PostMapping("save/{projectId}")
+    @PostMapping("/save")
+    @ResponseBody
     public String saveProject(
-            @PathVariable Integer projectId,
+            @RequestParam("id") Integer projectId,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam Map<String, String> roleUser) {
-        projectService.saveProject(projectId, title, description, roleUser);
-        return "redirect:/projects/{projectId}";
+            @RequestParam("roles[]") String[] roles,
+            @RequestParam("users[]") String[] users) {
+        projectService.saveProject(projectId, title, description, roles, users);
+
+
+        return "Project saved!";
     }
 
     @PostMapping("changeStatus")

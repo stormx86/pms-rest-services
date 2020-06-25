@@ -3,13 +3,13 @@ package pl.kozhanov.ProjectManagementSystem.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
-import pl.kozhanov.ProjectManagementSystem.domain.User;
 import pl.kozhanov.ProjectManagementSystem.domain.UserProjectRoleLink;
 import pl.kozhanov.ProjectManagementSystem.repos.ProjectRepo;
-import pl.kozhanov.ProjectManagementSystem.repos.ProjectStatusRepo;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProjectService {
@@ -34,7 +34,7 @@ public class ProjectService {
     public void addProject(String title, String description, String pmUser){
         Project newProject = new Project(LocalDateTime.now(), title, description, projectStatusService.findByStatusName("Waiting"));
         Set<UserProjectRoleLink> uprlSet = new HashSet<>();
-        //after authorization implementation change Anton to currently authorized uzer
+        //after authorization implementation change Anton to currently authorized user
         uprlSet.add(new UserProjectRoleLink(userService.findByUsername("Anton"), newProject, projectRoleService.findByRoleName("Creator")));
         //as option could be implemented realization with Map<User, Role> to add roles dynamically in loop depending on received Map parameter
         uprlSet.add(new UserProjectRoleLink(userService.findByUsername(pmUser), newProject, projectRoleService.findByRoleName("ProjectManager")));
@@ -42,34 +42,18 @@ public class ProjectService {
         projectRepo.save(newProject);
     }
 
-    public void saveProject(Integer id, String title, String description, Map<String, String> roleUser){
-        List<String> roles = new ArrayList<>();
-        List<String> users = new ArrayList<>();
-        Map<String, String> roleUserTotal = new HashMap<>();
-        for(String key :roleUser.keySet()) {
-            if(key.startsWith("role_")) {
-                roles.add(roleUser.get(key));
-            }
-            if(key.startsWith("user_")) {
-                users.add(roleUser.get(key));
-            }
-        }
-        for(int i=0; i<roles.size(); i++ )
-        {
-            roleUserTotal.put(roles.get(i), users.get(i));
-        }
-
+    public void saveProject(Integer id, String title, String description, String[] roles, String[] users){
         Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
         project.getUserProjectRoleLink().clear();
-        //Set<UserProjectRoleLink> uprlSet = new HashSet<>();
-        for(String key:roleUserTotal.keySet())
+
+        for(int i=0; i<roles.length; i++)
             {
-                project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(roleUserTotal.get(key)), project, projectRoleService.findByRoleName(key)));
+                project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(users[i]), project, projectRoleService.findByRoleName(roles[i])));
             }
-                //project.setUserProjectRoleLink(uprlSet);
-        projectRepo.save(project);
+
+        projectRepo.saveAndFlush(project);
     }
 
     public void changeProjectStatus(Integer id, String status){
