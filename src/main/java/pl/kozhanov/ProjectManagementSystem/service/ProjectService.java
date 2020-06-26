@@ -31,15 +31,17 @@ public class ProjectService {
 
     public List<ProjectView> findAllByOrderByCreatedAtDesc(){return projectRepo.findAllByOrderByCreatedAtDesc();}
 
-    public void addProject(String title, String description, String pmUser){
+    public void addProject(String title, String description, String[] roles, String[] users){
         Project newProject = new Project(LocalDateTime.now(), title, description, projectStatusService.findByStatusName("Waiting"));
         Set<UserProjectRoleLink> uprlSet = new HashSet<>();
-        //after authorization implementation change Anton to currently authorized user
-        uprlSet.add(new UserProjectRoleLink(userService.findByUsername("Anton"), newProject, projectRoleService.findByRoleName("Creator")));
-        //as option could be implemented realization with Map<User, Role> to add roles dynamically in loop depending on received Map parameter
-        uprlSet.add(new UserProjectRoleLink(userService.findByUsername(pmUser), newProject, projectRoleService.findByRoleName("ProjectManager")));
+        for(int i=0; i<roles.length; i++)
+        {
+            uprlSet.add(new UserProjectRoleLink(userService.findByUsername(users[i]), newProject, projectRoleService.findByRoleName(roles[i])));
+        }
+        //after authorization implementation change to findByUsername(currently authorized user) или как-то иначе добавить отдельно
+        //роль Creator к проекту. Если в списке при создании уже не будет роли Creator к выбору
         newProject.setUserProjectRoleLink(uprlSet);
-        projectRepo.save(newProject);
+        projectRepo.saveAndFlush(newProject);
     }
 
     public void saveProject(Integer id, String title, String description, String[] roles, String[] users){

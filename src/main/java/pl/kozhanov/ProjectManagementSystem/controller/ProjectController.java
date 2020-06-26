@@ -50,7 +50,8 @@ public class ProjectController {
 
 
     @GetMapping("/newProject")
-    public String newProject() {
+    public String newProject(Map<String, Object> model) {
+        model.put("existingRoles", projectRoleService.findAllRoles());
         return "newProject";
     }
 
@@ -64,13 +65,14 @@ public class ProjectController {
 
 
     @PostMapping("/add")
+    @ResponseBody
     public String addProject(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-           @RequestParam("pmUser") String pmUser){
-        projectService.addProject(title, description, pmUser);
-
-        return "redirect:/projects";
+            @RequestParam("roles[]") String[] roles,
+            @RequestParam("users[]") String[] users) {
+        projectService.addProject(title, description, roles, users);
+        return "OK";
     }
 
 
@@ -83,8 +85,6 @@ public class ProjectController {
             @RequestParam("roles[]") String[] roles,
             @RequestParam("users[]") String[] users) {
         projectService.saveProject(projectId, title, description, roles, users);
-
-
         return "Project saved!";
     }
 
@@ -94,7 +94,6 @@ public class ProjectController {
             @RequestParam("id") Integer projectId,
             @RequestParam("status") String status) {
         projectService.changeProjectStatus(projectId, status);
-
         return "Status changed!";
     }
 

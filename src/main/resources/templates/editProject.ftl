@@ -71,9 +71,6 @@
                 tableBody = $("#tb_roles tbody");
                 $(".form-control", markup).autocomplete(autocompl_opt);
                 tableBody.append(markup);
-
-
-
             });
         });
     </script>
