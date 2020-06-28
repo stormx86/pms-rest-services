@@ -1,6 +1,7 @@
 package pl.kozhanov.ProjectManagementSystem.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,6 +16,9 @@ public class User {
     private boolean active;
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<UserProjectRoleLink> userProjectRoleLink;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
     public User() {
     }
@@ -57,5 +61,13 @@ public class User {
 
     public void setUserProjectRoleLink(Set<UserProjectRoleLink> userProjectRoleLink) {
         this.userProjectRoleLink = userProjectRoleLink;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

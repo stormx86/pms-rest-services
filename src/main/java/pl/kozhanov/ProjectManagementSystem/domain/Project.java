@@ -2,6 +2,7 @@ package pl.kozhanov.ProjectManagementSystem.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -20,6 +21,10 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
+
+    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Comment> comments;
+
 
     public Project(LocalDateTime createdAt, String title, String description, ProjectStatus status) {
         this.createdAt = createdAt;
@@ -77,5 +82,13 @@ public class Project {
 
     public void setUserProjectRoleLink(Set<UserProjectRoleLink> userProjectRoleLink) {
         this.userProjectRoleLink = userProjectRoleLink;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

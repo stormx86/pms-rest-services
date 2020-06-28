@@ -82,6 +82,9 @@
 <div class="container-fluid">
     <@m.menu/>
     <br>
+    <form>
+        <input class="btn btn-primary btn-sm" type="button" value="<--Back" onclick="window.location.replace('http://localhost:8080/projects/${project.id}')">
+    </form>
     <h3>Edit project</h3>
     <div class="row">
 

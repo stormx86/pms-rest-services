@@ -2,6 +2,7 @@ package pl.kozhanov.ProjectManagementSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.kozhanov.ProjectManagementSystem.domain.Comment;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
 import pl.kozhanov.ProjectManagementSystem.domain.UserProjectRoleLink;
 import pl.kozhanov.ProjectManagementSystem.repos.ProjectRepo;
@@ -62,6 +63,14 @@ public class ProjectService {
         Project project = projectRepo.getById(id);
         project.setStatus(projectStatusService.findByStatusName(status));
         projectRepo.save(project);
+    }
+
+
+    public void addNewComment(Integer id, String commentText){
+        Project project = projectRepo.getById(id);
+        //after authorization implementation change to findByUsername(currently authorized user) или как-то иначе добавить отдельно
+        project.getComments().add(new Comment(LocalDateTime.now(), commentText, project, userService.findByUsername("Anton")));
+        projectRepo.saveAndFlush(project);
     }
 
 }

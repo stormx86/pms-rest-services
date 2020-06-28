@@ -1,10 +1,14 @@
 package pl.kozhanov.ProjectManagementSystem.service;
 
+import org.springframework.beans.factory.annotation.Value;
+import pl.kozhanov.ProjectManagementSystem.domain.Comment;
 import pl.kozhanov.ProjectManagementSystem.domain.ProjectStatus;
 import pl.kozhanov.ProjectManagementSystem.domain.UserProjectRoleLink;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 public interface ProjectView {
 
@@ -22,4 +26,13 @@ public interface ProjectView {
         return roleUserList;
     }
 
+     List<Comment> getComments();
+
+
+    default  List<Comment> getSortedComments(){
+        List<Comment> sortedList = getComments().stream()
+                .sorted(Comparator.comparing(Comment::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+        return  sortedList;
+    }
 }
