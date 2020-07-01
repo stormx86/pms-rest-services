@@ -11,8 +11,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="/resources/demos/style.css">
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href ="../../css/main.css">
     <title>Edit project</title>
 
     <script>
@@ -59,6 +59,15 @@
         }
     </script>
 
+
+    <script>
+        function deleteRole() {
+            $('#tb_roles').on('click', 'button', function(){
+                $(this).closest('tr').remove();
+            });
+        }
+    </script>
+
     <#--Addin new select with roles and users-->
     <script>
         $(document).ready(function () {
@@ -67,7 +76,11 @@
                     "                                <#list existingRoles as er>\n" +
                     "                                    <option value=\"${er}\">${er}</option>\n" +
                     "                                </#list>\n" +
-                    "                            </select></td><td><input class=\"form-control\" id=\"user_member\" type=\"text\"  name=\"userMember\" ></td></tr>");
+                    "                            </select></td><td><input class=\"form-control\" id=\"user_member\" type=\"text\"  name=\"userMember\" ></td><td>\n" +
+                   "                            <button onclick=\"deleteRole()\" class=\"btn btn-link btn-sm\">\n" +
+                   "                                <i style=\"color: dimgray\" class=\"fa fa-trash\" aria-hidden=\"true\"></i>\n" +
+                   "                            </button>\n" +
+                   "                        </td></tr>");
                 tableBody = $("#tb_roles tbody");
                 $(".form-control", markup).autocomplete(autocompl_opt);
                 tableBody.append(markup);
@@ -90,34 +103,46 @@
 
         <div class="col-3">
 
-            <table id="tb_roles" class="table table-sm table-bordered">
-                <thead>
-                <label style="font-weight:bold; font-size:16px">Project members:</label><br>
-                </thead>
-                <tbody>
-                <#list project.roleUser as ru>
-                    <tr>
-                        <td>
-                            <select  class="form-control" id="${ru?keep_before(":")}" name="role">
-                                <#list existingRoles as er>
-                                    <option value="${er}">${er}</option>
-                                </#list>
-                            </select>
-                        </td>
-                        <td><input class="form-control" id="user_member" type="text"  name="userMember" value="${ru?keep_after(":")}"></td>
-                    </tr>
-                </#list>
-                </tbody>
-            </table>
+            <div class="card">
+                <h5 class="card-header">Project members:</h5>
+                <table id="tb_roles" class="table table-sm">
+                    <tbody>
+                    <#list project.roleUser as ru>
+                        <tr>
+                            <td>
+                                <select  class="form-control" id="${ru?keep_before(":")}" name="role">
+                                    <#list existingRoles as er>
+                                        <option value="${er}">${er}</option>
+                                    </#list>
+                                </select>
+                            </td>
+                            <td><input class="form-control" id="user_member" type="text"  name="userMember" value="${ru?keep_after(":")}"></td>
+                            <td>
+                                <button onclick="deleteRole()" class="btn btn-link btn-sm">
+                                    <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </#list>
+                    </tbody>
+                </table>
+
+            </div>
+            <br>
             <button id="add_role" class="btn btn-primary btn-sm">Add role</button><br><br>
             <button onclick="saveProject()" class="btn btn-success btn-sm">Save</button><br>
             <span style="font-size: 12px" id="save_success" class="badge badge-success"></span>
         </div>
         <div class="col-6">
-            <label style="font-weight:bold; font-size:16px">Project title:</label><br>
-            <input class="form-control" type="text" name="title" value="${project.title}" style="width: 80%"><br><br>
-            <label style="font-weight:bold; font-size:16px">Description:</label><br>
-            <textarea class="form-control" name="description"  rows="12" style="width: 80%">${project.description}</textarea>
+            <div class="card">
+                <h5 class="card-header">Project title:</h5>
+                <input class="form-control" type="text" name="title" value="${project.title}">
+            </div>
+<br><br><br>
+            <div class="card">
+                <h5 class="card-header">Description:</h5>
+                <textarea class="form-control" name="description"  rows="12">${project.description}</textarea>
+            </div>
         </div>
     </div>
 </div>

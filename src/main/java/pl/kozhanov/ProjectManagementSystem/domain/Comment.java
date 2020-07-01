@@ -1,34 +1,39 @@
 package pl.kozhanov.ProjectManagementSystem.domain;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "comments")
-public class Comment implements Comparable<Comment> {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     private String commentText;
+    private String createdAtView;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="project_id", referencedColumnName = "id")
     private Project project;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="user_id", referencedColumnName = "id")
     private User user;
 
     public Comment() {
     }
 
-    public Comment(LocalDateTime createdAt, String commentText, Project project, User user) {
+    public Comment(Instant createdAt, String commentText, Project project, User user) {
         this.createdAt = createdAt;
         this.commentText = commentText;
         this.project = project;
         this.user = user;
+        this.createdAtView = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(ZonedDateTime.ofInstant(createdAt, ZoneId.systemDefault()));
     }
 
     public Integer getId() {
@@ -39,11 +44,11 @@ public class Comment implements Comparable<Comment> {
         this.id = id;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -71,11 +76,8 @@ public class Comment implements Comparable<Comment> {
         this.user = user;
     }
 
-    @Override
-    public int compareTo(Comment o) {
-        if(getCreatedAt() == null || o.getCreatedAt() == null){
-            return 0;
-        }
-        return getCreatedAt().compareTo(o.getCreatedAt());
-    }
+    public String getCreatedAtView() { return createdAtView; }
+
+    public void setCreatedAtView() {this.createdAtView = createdAtView;}
+
 }

@@ -5,9 +5,10 @@ import org.springframework.stereotype.Service;
 import pl.kozhanov.ProjectManagementSystem.domain.Comment;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
 import pl.kozhanov.ProjectManagementSystem.domain.UserProjectRoleLink;
+import pl.kozhanov.ProjectManagementSystem.repos.CommentRepo;
 import pl.kozhanov.ProjectManagementSystem.repos.ProjectRepo;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,16 +25,20 @@ public class ProjectService {
     @Autowired
     ProjectStatusService projectStatusService;
 
+    @Autowired
+    CommentRepo commentRepo;
+
+
     public List<Project> findAll(){
         return  projectRepo.findAll();
     }
 
-    public ProjectView findById(Integer id){return projectRepo.findById(id);}
+    public ProjectViewProjection findById(Integer id){return projectRepo.findById(id);}
 
-    public List<ProjectView> findAllByOrderByCreatedAtDesc(){return projectRepo.findAllByOrderByCreatedAtDesc();}
+    public List<ProjectViewProjection> findAllByOrderByCreatedAtDesc(){return projectRepo.findAllByOrderByCreatedAtDesc();}
 
     public void addProject(String title, String description, String[] roles, String[] users){
-        Project newProject = new Project(LocalDateTime.now(), title, description, projectStatusService.findByStatusName("Waiting"));
+        Project newProject = new Project(Instant.now(), title, description, projectStatusService.findByStatusName("Waiting"));
         Set<UserProjectRoleLink> uprlSet = new HashSet<>();
         for(int i=0; i<roles.length; i++)
         {
@@ -69,9 +74,11 @@ public class ProjectService {
     public void addNewComment(Integer id, String commentText){
         Project project = projectRepo.getById(id);
         //after authorization implementation change to findByUsername(currently authorized user) или как-то иначе добавить отдельно
-        project.getComments().add(new Comment(LocalDateTime.now(), commentText, project, userService.findByUsername("Anton")));
+        project.getComments().add(new Comment(Instant.now(), commentText, project, userService.findByUsername("Anton")));
         projectRepo.saveAndFlush(project);
     }
+
+
 
 }
 

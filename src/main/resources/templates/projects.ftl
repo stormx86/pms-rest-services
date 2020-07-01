@@ -9,7 +9,7 @@
     <title>Welcome to the Project Management System</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
+    <link rel="stylesheet" type="text/css" href ="css/main.css">
 </head>
     <body>
 
@@ -34,7 +34,7 @@
                     <#list projects as project>
                         <tr>
                             <th scope="row" onclick="location.href='/projects/${project.id}'">${project.id}</th>
-                            <td onclick="location.href='/projects/${project.id}'">${project.createdAt}</td>
+                            <td onclick="location.href='/projects/${project.id}'">${project.createdAtFormatted}</td>
                             <td onclick="location.href='/projects/${project.id}'">${project.title}</td>
                             <td onclick="location.href='/projects/${project.id}'">${project.getStatus().getStatusName()}</td>
                             <td onclick="location.href='/projects/${project.id}'">

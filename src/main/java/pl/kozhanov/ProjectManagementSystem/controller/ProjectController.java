@@ -6,8 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pl.kozhanov.ProjectManagementSystem.service.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +27,7 @@ public class ProjectController {
 
     @GetMapping
     public String showProjects(Map<String, Object> model){
-        List<ProjectView> projects = projectService.findAllByOrderByCreatedAtDesc();
+        List<ProjectViewProjection> projects = projectService.findAllByOrderByCreatedAtDesc();
         model.put("projects", projects);
         return "projects";
     }

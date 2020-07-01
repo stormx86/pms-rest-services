@@ -1,7 +1,7 @@
 package pl.kozhanov.ProjectManagementSystem.domain;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +11,7 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     private String title;
     private String description;
 
@@ -22,15 +22,15 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
-    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "project", cascade = {CascadeType.ALL})
     private List<Comment> comments;
 
 
-    public Project(LocalDateTime createdAt, String title, String description, ProjectStatus status) {
-        this.createdAt = createdAt;
+    public Project(Instant createdAt, String title, String description, ProjectStatus status) {
         this.title = title;
         this.description = description;
         this.status = status;
+        this.createdAt = createdAt;
     }
 
     public Project() {
@@ -68,13 +68,16 @@ public class Project {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt;
     }
+        /*DateTimeFormatter formatter = null;
+        formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        this.createdAt = LocalDateTime.parse(createdAt.toString(), formatter);*/
+
 
     public Set<UserProjectRoleLink> getUserProjectRoleLink() {
         return userProjectRoleLink;

@@ -8,9 +8,11 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <#import "parts/menu.ftl" as m>
     <title>Welcome to the Project Management System</title>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href ="../css/main.css">
     <#--Set selected status in <select> according to the actual project status-->
     <script>
         $(function() {
@@ -56,6 +58,22 @@
         }
     </script>
 
+    <script>
+        function deleteComment(comment_id) {
+            $.ajax({
+                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                url: "/comments/delComment",
+                type: "POST",
+                data: {commentId: comment_id},
+                success: function(response){
+                    if(response == "Comment deleted!")
+                        $("#comments").load(" #comments");
+                }
+            })
+        }
+    </script>
+
+
 
 </head>
 <body>
@@ -73,6 +91,7 @@
             </form>
         </div>
     </div>
+    <br>
     <div class="row">
         <div class="col-2">
             <div class="row">
@@ -101,9 +120,9 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-header">
-                    <div class="row">
-                        <div class="col"><h5>${project.title}</h5></div>
-                        <div class="col-3"><span class="align-middle">${project.createdAt}</span></div>
+                    <div class="row" >
+                        <div class="col" ><h5>${project.title}</h5></div>
+                        <div class="col-3"><span class="align-middle">${project.getCreatedAtFormatted()}</span></div>
                     </div>
                 </div>
 
@@ -117,7 +136,7 @@
         </div>
         <div class="col-6">
             <div class="card collapse" id="add_comment">
-                <h6 class="card-header">Add new comment:</h6>
+                <h6 class="card-header" style="background: #ECF4E5">Add new comment:</h6>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
@@ -135,11 +154,12 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        <div class="col"><h5>Comments</h5></div>
-                        <div class="col-2">
+                        <div class="col" ><h5>Comments</h5></div>
+                        <div class="col-1">
                             <button class="btn btn-outline-dark btn-sm" data-toggle="collapse" data-target="#add_comment" title="Add comment">
                                 <i class="fa fa-plus" aria-hidden="true"></i>
-                            </button></div>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body" id="comments">
@@ -147,7 +167,12 @@
                     <#list project.getSortedComments() as comment>
                         <div class="row">
                             <div class="col"><h6 class="card-title">${comment.getUser().getUsername()}</h6></div>
-                            <div class="col-3"><span class="card-text">${comment.getCreatedAt()}</span></div>
+                            <div class="col-3"><span class="card-text">${comment.getCreatedAtView()}</span></div>
+                            <div class="col-1">
+                                <button onclick="deleteComment(this.id)" id="${comment.getId()}" class="btn btn-link btn-sm" title="Delete comment">
+                                    <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col"><span class="card-text">${comment.getCommentText()}</span><hr/></div>
@@ -159,6 +184,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 
