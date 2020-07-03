@@ -1,7 +1,8 @@
 package pl.kozhanov.ProjectManagementSystem.domain;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -10,18 +11,26 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     private String title;
     private String description;
-    private String status;
-    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="status_id", referencedColumnName = "id")
+    private ProjectStatus status;
+
+    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
-    public Project(LocalDateTime createdAt, String title, String description, String status) {
-        this.createdAt = createdAt;
+    @OneToMany(mappedBy = "project", cascade = {CascadeType.ALL})
+    private List<Comment> comments;
+
+
+    public Project(Instant createdAt, String title, String description, ProjectStatus status) {
         this.title = title;
         this.description = description;
         this.status = status;
+        this.createdAt = createdAt;
     }
 
     public Project() {
@@ -51,21 +60,24 @@ public class Project {
         this.description = description;
     }
 
-    public String getStatus() {
+    public ProjectStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ProjectStatus status) {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt;
     }
+        /*DateTimeFormatter formatter = null;
+        formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        this.createdAt = LocalDateTime.parse(createdAt.toString(), formatter);*/
+
 
     public Set<UserProjectRoleLink> getUserProjectRoleLink() {
         return userProjectRoleLink;
@@ -73,5 +85,13 @@ public class Project {
 
     public void setUserProjectRoleLink(Set<UserProjectRoleLink> userProjectRoleLink) {
         this.userProjectRoleLink = userProjectRoleLink;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

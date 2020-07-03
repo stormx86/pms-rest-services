@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import pl.kozhanov.ProjectManagementSystem.domain.ProjectRole;
 import pl.kozhanov.ProjectManagementSystem.repos.ProjectRoleRepo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ProjectRoleService {
 
@@ -12,4 +15,12 @@ public class ProjectRoleService {
     ProjectRoleRepo projectRoleRepo;
 
     public ProjectRole findByRoleName(String rolename){ return projectRoleRepo.findByRoleName(rolename); }
+
+    public List<String> findAllRoles(){
+        List<String> existingRoles = new ArrayList<>();
+        for(ProjectRole pr:projectRoleRepo.findAll()){
+            existingRoles.add(pr.getRoleName());
+        }
+        return existingRoles;
+    };
 }
