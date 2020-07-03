@@ -26,8 +26,11 @@ public class ProjectController {
     ProjectRoleService projectRoleService;
 
     @GetMapping
-    public String showProjects(Map<String, Object> model){
-        List<ProjectViewProjection> projects = projectService.findAllByOrderByCreatedAtDesc();
+    public String showProjects(
+            @RequestParam(defaultValue = "") String projectManagerFilter,
+            @RequestParam(defaultValue = "") String createdByFilter,
+            Map<String, Object> model){
+        List<ProjectMainProjection> projects = projectService.findProjects(projectManagerFilter, createdByFilter);
         model.put("projects", projects);
         return "projects";
     }

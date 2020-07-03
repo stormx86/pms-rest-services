@@ -36,7 +36,7 @@
 
     <script>
         function saveProject() {
-            var roles = [], users = [], object = {};
+            var roles = [], users = [];
             $("select").each(function () {
                roles.push($(this).val());
             })
@@ -68,7 +68,7 @@
         }
     </script>
 
-    <#--Addin new select with roles and users-->
+    <#--Adding new select with roles and users-->
     <script>
         $(document).ready(function () {
             $("#add_role").click(function () {

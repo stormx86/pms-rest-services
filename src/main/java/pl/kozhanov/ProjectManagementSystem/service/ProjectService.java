@@ -35,7 +35,6 @@ public class ProjectService {
 
     public ProjectViewProjection findById(Integer id){return projectRepo.findById(id);}
 
-    public List<ProjectViewProjection> findAllByOrderByCreatedAtDesc(){return projectRepo.findAllByOrderByCreatedAtDesc();}
 
     public void addProject(String title, String description, String[] roles, String[] users){
         Project newProject = new Project(Instant.now(), title, description, projectStatusService.findByStatusName("Waiting"));
@@ -78,6 +77,30 @@ public class ProjectService {
         projectRepo.saveAndFlush(project);
     }
 
+
+    public List<ProjectMainProjection> findProjects(String projectManagerFilter, String createdByFilter){
+
+        if(projectManagerFilter.equals("") && createdByFilter.equals(""))
+        {
+            return projectRepo.findAllForMainList();
+        }
+
+        else if (!projectManagerFilter.equals("") && createdByFilter.equals(""))
+        {
+            return projectRepo.findByProjectManager(projectManagerFilter);
+        }
+
+        else if(projectManagerFilter.equals("") && !createdByFilter.equals(""))
+        {
+            return  projectRepo.findByCreator(createdByFilter);
+        }
+        else if(!projectManagerFilter.equals("") && !createdByFilter.equals(""))
+        {
+            return  projectRepo.findByProjectManagerAndCreator(projectManagerFilter, createdByFilter);
+        }
+
+        else return null;
+    }
 
 
 }
