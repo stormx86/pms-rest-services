@@ -35,7 +35,7 @@
             var title = $('input[name="title"]').val();
             var description =$('textarea[name="description"]').val();
             $.ajax({
-                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/projects/add",
                 type: "POST",
                 data: {title: title, description: description, roles: roles, users: users},

@@ -10,6 +10,7 @@ import pl.kozhanov.ProjectManagementSystem.repos.ProjectRepo;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -72,34 +73,47 @@ public class ProjectService {
 
     public void addNewComment(Integer id, String commentText){
         Project project = projectRepo.getById(id);
-        //after authorization implementation change to findByUsername(currently authorized user) или как-то иначе добавить отдельно
-        project.getComments().add(new Comment(Instant.now(), commentText, project, userService.findByUsername("Anton")));
+        String currentLoggedInUser = userService.getCurrentLoggedInUsername();
+        project.getComments().add(new Comment(Instant.now(), commentText, project, userService.findByUsername(currentLoggedInUser)));
         projectRepo.saveAndFlush(project);
     }
 
+    public List<ProjectMainProjection> checkIfCurrentLoggedInUserIsMember(List<ProjectMainProjection> projectList)
+    {
+        String currentLoggedInUser = userService.getCurrentLoggedInUsername();
+        for(Iterator<ProjectMainProjection> it = projectList.iterator(); it.hasNext();)
+        {
+            ProjectMainProjection p = it.next();
+            if(!userService.findAllUsersOnProject(p.getId()).contains(currentLoggedInUser) && !userService.ifAdmin())
+            {
+                it.remove();
+            }
+        }
+        return projectList;
+    }
 
     public List<ProjectMainProjection> findProjects(String projectManagerFilter, String createdByFilter){
-
+        //if no one filter selected
         if(projectManagerFilter.equals("") && createdByFilter.equals(""))
         {
-            return projectRepo.findAllForMainList();
+            return checkIfCurrentLoggedInUserIsMember(projectRepo.findAllForMainList());
         }
-
+        //if filter by ProjectManager selected
         else if (!projectManagerFilter.equals("") && createdByFilter.equals(""))
         {
-            return projectRepo.findByProjectManager(projectManagerFilter);
+            return checkIfCurrentLoggedInUserIsMember(projectRepo.findByProjectManager(projectManagerFilter));
         }
-
+        //if filter by Creator selected
         else if(projectManagerFilter.equals("") && !createdByFilter.equals(""))
         {
-            return  projectRepo.findByCreator(createdByFilter);
+            return checkIfCurrentLoggedInUserIsMember(projectRepo.findByCreator(createdByFilter));
         }
-        else if(!projectManagerFilter.equals("") && !createdByFilter.equals(""))
+        //if filter by ProjectManager & Creator selected | if(!projectManagerFilter.equals("") && !createdByFilter.equals(""))
+        else
         {
-            return  projectRepo.findByProjectManagerAndCreator(projectManagerFilter, createdByFilter);
+            return checkIfCurrentLoggedInUserIsMember(projectRepo.findByProjectManagerAndCreator(projectManagerFilter, createdByFilter));
         }
 
-        else return null;
     }
 
 

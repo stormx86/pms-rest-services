@@ -32,6 +32,7 @@ public class ProjectController {
             Map<String, Object> model){
         List<ProjectMainProjection> projects = projectService.findProjects(projectManagerFilter, createdByFilter);
         model.put("projects", projects);
+        model.put("loggedUser", userService.getCurrentLoggedInUsername());
         return "projects";
     }
 
@@ -39,13 +40,18 @@ public class ProjectController {
     public String openProject(@PathVariable Integer projectId, Model model){
             model.addAttribute("project", projectService.findById(projectId));
             model.addAttribute("statuses", projectStatusService.findAllStatuses());
-        return "openProject";
+            model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
+            // if currently logged user is not a member of the project --> Access denied
+            String currentLoggedInUser = userService.getCurrentLoggedInUsername();
+            if(!userService.findAllUsersOnProject(projectId).contains(currentLoggedInUser) && !userService.ifAdmin()) return "project403";
+            else return "openProject";
     }
 
     @GetMapping("edit/{projectId}")
     public String editProject(@PathVariable Integer projectId, Model model) {
         model.addAttribute("project", projectService.findById(projectId));
         model.addAttribute("existingRoles", projectRoleService.findAllRoles());
+        model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
         return "editProject";
     }
 
@@ -53,6 +59,7 @@ public class ProjectController {
     @GetMapping("/newProject")
     public String newProject(Map<String, Object> model) {
         model.put("existingRoles", projectRoleService.findAllRoles());
+        model.put("loggedUser", userService.getCurrentLoggedInUsername());
         return "newProject";
     }
 

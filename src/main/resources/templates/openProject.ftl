@@ -26,7 +26,7 @@
             var id = ${project.getId()};
             var status = $("#sta option:selected").val();
             $.ajax({
-                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/projects/changeStatus",
                 type: "POST",
                 data: {id: id, status: status},
@@ -44,7 +44,7 @@
         function addComment() {
             var commentText =$('textarea[name="newComment"]').val();
             $.ajax({
-                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/comments/addNew",
                 type: "POST",
                 data: {id: ${project.getId()}, commentText: commentText},
@@ -61,7 +61,7 @@
     <script>
         function deleteComment(comment_id) {
             $.ajax({
-                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/comments/delComment",
                 type: "POST",
                 data: {commentId: comment_id},

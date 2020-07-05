@@ -103,7 +103,7 @@
                 <thead class="thead-dark">
                 <tr>
                     <th style="width: 8%" scope="col">Project #</th>
-                    <th style="width: 11%" scope="col">Created At</th>
+                    <th style="width: 11%" scope="col">Created On</th>
                     <th scope="col">Project name</th>
                     <th style="width: 10%" scope="col">Status</th>
                     <th style="width: 10%" scope="col">Project Manager</th>
