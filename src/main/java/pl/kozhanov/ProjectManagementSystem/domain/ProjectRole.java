@@ -10,7 +10,7 @@ public class ProjectRole {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String roleName;
-    @OneToMany(mappedBy = "projectRole", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "projectRole", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
     public ProjectRole() {

@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -70,10 +71,19 @@
     <@m.menu/>
     <br>
     <div class="row">
-        <div class="col-2">
+        <div class="col-4">
+            <button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#filter_checkboxes" title="Open filter">
+                Filter
+            </button>
+        </div>
+    </div>
+
+    <div class="row collapse" id="filter_checkboxes">
+        <div class="col-3">
+            <br>
             <form method="get" id="findForm" action="/projects">
-            <button type="submit" class="btn btn-success btn-sm">Find</button>
-            </form><br>
+                <button type="submit" class="btn btn-success btn-sm">Find</button>
+            </form>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="checkbox" value="" id="cb_projectManager">
                 <label class="form-check-label" for="projectManager">
@@ -99,8 +109,8 @@
 
     <div class="row">
         <div class="col">
-            <table class="table table-hover table-bordered table-striped">
-                <thead class="thead-dark">
+            <table class="table table-hover table-bordered">
+                <thead style="background-color: #cfecfa">
                 <tr>
                     <th style="width: 8%" scope="col">Project #</th>
                     <th style="width: 11%" scope="col">Created On</th>
@@ -116,10 +126,9 @@
                         <th scope="row" onclick="location.href='/projects/${project.id}'">${project.id}</th>
                         <td onclick="location.href='/projects/${project.id}'">${project.createdAtFormatted}</td>
                         <td onclick="location.href='/projects/${project.id}'">${project.title}</td>
-                        <td onclick="location.href='/projects/${project.id}'">${project.status}</td>
-                        <td onclick="location.href='/projects/${project.id}'">${project.pmName}</td>
-                        <td onclick="location.href='/projects/${project.id}'">${project.creatorName}</td>
-
+                        <td onclick="location.href='/projects/${project.id}'">${project.status.getStatusName()}</td>
+                        <td onclick="location.href='/projects/${project.id}'">${project.projectManager}</td>
+                        <td onclick="location.href='/projects/${project.id}'">${project.creator}</td>
                     </tr>
                 <#else>
                     No projects

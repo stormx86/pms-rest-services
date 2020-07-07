@@ -1,6 +1,7 @@
 package pl.kozhanov.ProjectManagementSystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class ProjectController {
             @RequestParam(defaultValue = "") String projectManagerFilter,
             @RequestParam(defaultValue = "") String createdByFilter,
             Map<String, Object> model){
-        List<ProjectMainProjection> projects = projectService.findProjects(projectManagerFilter, createdByFilter);
+        List<ProjectViewProjection> projects = projectService.findProjects(projectManagerFilter, createdByFilter);
         model.put("projects", projects);
         model.put("loggedUser", userService.getCurrentLoggedInUsername());
         return "projects";
@@ -43,14 +44,17 @@ public class ProjectController {
             model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
             // if currently logged user is not a member of the project --> Access denied
             String currentLoggedInUser = userService.getCurrentLoggedInUsername();
-            if(!userService.findAllUsersOnProject(projectId).contains(currentLoggedInUser) && !userService.ifAdmin()) return "project403";
+            if(!userService.findAllUsersOnProject(projectId).contains(currentLoggedInUser) &&
+                !userService.isCreator(currentLoggedInUser, projectId) &&
+                !userService.isProjectManager(currentLoggedInUser, projectId) &&
+                !userService.isAdmin()) return "project403";
             else return "openProject";
     }
 
     @GetMapping("edit/{projectId}")
     public String editProject(@PathVariable Integer projectId, Model model) {
         model.addAttribute("project", projectService.findById(projectId));
-        model.addAttribute("existingRoles", projectRoleService.findAllRoles());
+        model.addAttribute("existingRoles", projectRoleService.findAllRoleNames());
         model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
         return "editProject";
     }
@@ -58,7 +62,7 @@ public class ProjectController {
 
     @GetMapping("/newProject")
     public String newProject(Map<String, Object> model) {
-        model.put("existingRoles", projectRoleService.findAllRoles());
+        model.put("existingRoles", projectRoleService.findAllRoleNames());
         model.put("loggedUser", userService.getCurrentLoggedInUsername());
         return "newProject";
     }
@@ -77,9 +81,10 @@ public class ProjectController {
     public String addProject(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("roles[]") String[] roles,
-            @RequestParam("users[]") String[] users) {
-        projectService.addProject(title, description, roles, users);
+            @RequestParam("projectManager") String projectManager,
+            @RequestParam(value = "roles[]", defaultValue = "none") String[] roles,
+            @RequestParam(value = "users[]", defaultValue = "none") String[] users) {
+        projectService.addProject(title, description, projectManager, roles, users);
         return "OK";
     }
 
@@ -90,10 +95,18 @@ public class ProjectController {
             @RequestParam("id") Integer projectId,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("roles[]") String[] roles,
-            @RequestParam("users[]") String[] users) {
-        projectService.saveProject(projectId, title, description, roles, users);
+            @RequestParam("projectManager") String projectManager,
+            @RequestParam(value = "roles[]", defaultValue = "none") String[] roles,
+            @RequestParam(value = "users[]", defaultValue = "none") String[] users) {
+        projectService.saveProject(projectId, title, description, projectManager, roles, users);
         return "Project saved!";
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("delete/{projectId}")
+    public String deleteProject(@PathVariable Integer projectId){
+        projectService.deleteProject(projectId);
+        return "redirect:/projects";
     }
 
     @PostMapping("changeStatus")

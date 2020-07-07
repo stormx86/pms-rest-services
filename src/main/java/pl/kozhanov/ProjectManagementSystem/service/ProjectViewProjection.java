@@ -19,6 +19,8 @@ public interface ProjectViewProjection {
     String getTitle();
     String getDescription();
     ProjectStatus getStatus();
+    String getCreator();
+    String getProjectManager();
     Set<UserProjectRoleLink> getUserProjectRoleLink();
 
     default String getCreatedAtFormatted(){

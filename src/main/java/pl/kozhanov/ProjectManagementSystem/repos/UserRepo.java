@@ -7,9 +7,11 @@ import pl.kozhanov.ProjectManagementSystem.domain.User;
 
 import java.util.List;
 
-public interface UserRepo extends JpaRepository<User, Long> {
+public interface UserRepo extends JpaRepository<User, Integer> {
 
     User findByUsername(String username);
+
+    User getById(Integer id);
 
     List<User> findAll();
 

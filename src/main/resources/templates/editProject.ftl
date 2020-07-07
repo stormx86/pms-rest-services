@@ -45,11 +45,12 @@
             })
             var title = $('input[name="title"]').val();
             var description =$('textarea[name="description"]').val();
+            var projectManager = $('input[name="projectManager"]').val();
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/projects/save",
                 type: "POST",
-                data: {id: ${project.getId()}, title: title, description: description, roles: roles, users: users},
+                data: {id: ${project.getId()}, title: title, description: description, projectManager: projectManager, roles: roles, users: users},
                 success: function(response){
                     $("#save_success").empty();
                     $("#save_success").append(response);
@@ -107,6 +108,14 @@
                 <h5 class="card-header">Project members:</h5>
                 <table id="tb_roles" class="table table-sm">
                     <tbody>
+                    <tr>
+                        <td style="text-align: center; vertical-align: middle;"><span class="card-text"><h6>Creator:</h6></span></td>
+                        <td><input class="form-control" id="creator" type="text" name="creator" readonly="readonly" value="${project.creator}"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; vertical-align: middle;"><span class="card-text"><h6>Project manager:</h6></span></td>
+                        <td><input class="form-control" id="project_manager" type="text" name="projectManager" value="${project.projectManager}"></td>
+                    </tr>
                     <#list project.roleUser as ru>
                         <tr>
                             <td>

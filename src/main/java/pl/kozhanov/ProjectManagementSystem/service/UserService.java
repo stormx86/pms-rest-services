@@ -8,12 +8,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import pl.kozhanov.ProjectManagementSystem.domain.GlobalRole;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
 import pl.kozhanov.ProjectManagementSystem.domain.User;
 import pl.kozhanov.ProjectManagementSystem.repos.UserRepo;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -22,6 +24,12 @@ public class UserService implements UserDetailsService {
     @Autowired
     UserRepo userRepo;
 
+    @Autowired
+    ProjectService projectService;
+
+    public List<User> findAll(){
+       return userRepo.findAll();
+    }
 
 public User findByUsername(String username){ return  userRepo.findByUsername(username); }
 
@@ -52,7 +60,7 @@ public String getCurrentLoggedInUsername()
     }
 }
 
-public boolean ifAdmin()
+public boolean isAdmin()
 {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
@@ -60,6 +68,63 @@ public boolean ifAdmin()
     }
     else return false;
 }
+
+public boolean isCreator(String currentLoggedInUser, Integer projectId){
+        if(projectService.findById(projectId).getCreator().equals(currentLoggedInUser))
+        {
+            return true;
+        }
+        else return false;
+}
+
+public boolean isProjectManager(String currentLoggedInUser, Integer projectId){
+        if(projectService.findById(projectId).getProjectManager().equals(currentLoggedInUser))
+        {
+            return true;
+        }
+        else return false;
+    }
+
+public String addUser(String username){
+        for(User u:userRepo.findAll())
+        {
+            if (u.getUsername().equals(username)) return "Username already exists";
+
+        }
+        User user = new User();
+        user.setUsername(username);
+        //as option add "email" filed to User entity, enter username & email and send random(regular expression) password by email;
+        //option "change password by user" should be added
+        user.setPassword("1");
+        user.setActive(true);
+        user.setGlobalRoles(Collections.singleton(GlobalRole.USER));
+        userRepo.save(user);
+        return "Successfully created!";
+}
+
+    public String saveUser(Integer userId, String newUsername, String[] roles){
+        for(User u:userRepo.findAll())
+        {
+            //if newUsername is in userDB & newUsername != username of current userID
+            if (u.getUsername().equals(newUsername) && !u.getUsername().equals(userRepo.getById(userId).getUsername())) return "Username already exists";
+
+        }
+
+        User user = userRepo.getById(userId);
+        user.setUsername(newUsername);
+        user.getGlobalRoles().clear();
+
+        for(int i=0; i<roles.length; i++)
+            {
+                user.getGlobalRoles().add(GlobalRole.valueOf(roles[i]));
+            }
+        userRepo.save(user);
+        return "Successfully saved!";
+    }
+
+    public void deleteUser(User user){
+        userRepo.delete(user);
+    }
 
 
     @Override

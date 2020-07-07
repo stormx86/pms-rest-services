@@ -18,10 +18,10 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private boolean active;
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval= true)
     private List<Comment> comments;
 
     @ElementCollection(targetClass = GlobalRole.class, fetch = FetchType.EAGER)

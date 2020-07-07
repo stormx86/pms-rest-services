@@ -19,7 +19,11 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
 
         List<ProjectViewProjection> findAllByOrderByCreatedAtDesc();
 
-        List<ProjectViewProjection> findByUserProjectRoleLinkProjectRoleRoleNameAndUserProjectRoleLinkUserUsername(String rolename, String username);
+        List<ProjectViewProjection> findAllByCreatorOrderByCreatedAtDesc(String creator);
+
+        List<ProjectViewProjection> findAllByProjectManagerOrderByCreatedAtDesc(String projectManager);
+
+        List<ProjectViewProjection> findAllByProjectManagerAndCreatorOrderByCreatedAtDesc(String projectManager, String creator);
 
 
        /* @Query("SELECT p FROM ")
@@ -37,7 +41,7 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
                     "JOIN user_project_role_link as uprl on uprl.project_id=p.id " +
                     "JOIN usr as u on u.id = uprl.user_id " +
                     "JOIN project_role as pr on pr.id = uprl.projectroles_id " +
-                    "WHERE pr.id=1 " +
+                    "WHERE pr.id=1 "+
                     "order by p.created_at desc ")
        List<ProjectMainProjection> findAllForMainList();
 

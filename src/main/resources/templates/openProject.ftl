@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <#assign security=JspTaglibs["http://www.springframework.org/security/tags"]/>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -89,6 +90,11 @@
             <form action="/projects/edit/${project.id}" method="get">
                 <input class="btn btn-primary btn-sm" type="submit" value="Edit project"/>
             </form>
+            <@security.authorize access="hasAnyAuthority('ADMIN')">
+            <form action="/projects/delete/${project.id}" method="get">
+                <input class="btn btn-danger btn-sm" type="submit" value="Delete project"/>
+            </form>
+            </@security.authorize>
         </div>
     </div>
     <br>
@@ -99,6 +105,8 @@
                     <div class="card">
                         <h5 class="card-header">Project members</h5>
                         <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><p class="card-text">Creator: ${project.creator}</p></li>
+                            <li class="list-group-item"><p class="card-text">Project Manager: ${project.projectManager}</p></li>
                             <#list project.roleUser as roleUser>
                             <li class="list-group-item"><p class="card-text">${roleUser?keep_before(":")}: ${roleUser?keep_after(":")}</p></li>
                             </#list>
@@ -136,7 +144,7 @@
         </div>
         <div class="col-6">
             <div class="card collapse" id="add_comment">
-                <h6 class="card-header" style="background: #ECF4E5">Add new comment:</h6>
+                <h6 class="card-header">Add new comment:</h6>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
@@ -168,11 +176,13 @@
                         <div class="row">
                             <div class="col"><h6 class="card-title">${comment.getUser().getUsername()}</h6></div>
                             <div class="col-3"><span class="card-text">${comment.getCreatedAtView()}</span></div>
+                            <@security.authorize access="hasAnyAuthority('ADMIN')">
                             <div class="col-1">
                                 <button onclick="deleteComment(this.id)" id="${comment.getId()}" class="btn btn-link btn-sm" title="Delete comment">
                                     <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
+                            </@security.authorize>
                         </div>
                         <div class="row">
                             <div class="col"><span class="card-text">${comment.getCommentText()}</span><hr/></div>

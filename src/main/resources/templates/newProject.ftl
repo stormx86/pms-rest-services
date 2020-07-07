@@ -34,11 +34,12 @@
             })
             var title = $('input[name="title"]').val();
             var description =$('textarea[name="description"]').val();
+            var projectManager = $('input[name="projectManager"]').val();
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/projects/add",
                 type: "POST",
-                data: {title: title, description: description, roles: roles, users: users},
+                data: {title: title, description: description, projectManager:projectManager, roles: roles, users: users},
                 success: function(response){
                     if(response="OK"){
                         window.location.replace("http://localhost:8080/projects")
@@ -92,6 +93,10 @@
                 <table id="tb_roles" class="table table-sm table-bordered">
                     <tbody>
                     <tr>
+                        <td style="text-align: center; vertical-align: middle;"><span class="card-text"><h6>Project manager:</h6></span></td>
+                        <td><input class="form-control" id="project_manager" type="text" name="projectManager"></td>
+                    </tr>
+<#--                    <tr>
                         <td>
                             <select  class="form-control" name="role">
                                 <#list existingRoles as er>
@@ -105,7 +110,7 @@
                                 <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
                             </button>
                         </td>
-                    </tr>
+                    </tr>-->
                     </tbody>
                 </table>
             </div>
