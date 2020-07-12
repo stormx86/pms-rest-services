@@ -70,14 +70,14 @@
                             <input type="text" class="form-control" name="newUsername" value="${user.username}">
                         </div>
 
-                        <div class="col-1">
-                            <button onclick="saveUser()" class="btn btn-success btn-sm">Save</button>
-                        </div>
-                        <div class="col-1">
+                        <div class="col-3">
+                            <button onclick="saveUser()" class="btn btn-success btn-sm">Save User</button>
+                            <br><br>
                             <form action="/admin/deleteUser/${user.id}" method="get">
                                 <input type="submit" class="btn btn-danger btn-sm" value="Delete User"/>
                             </form>
                         </div>
+
                     </div>
 <br>
                     <div class="row">

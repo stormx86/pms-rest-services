@@ -4,9 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import pl.kozhanov.ProjectManagementSystem.domain.ProjectModelWrapper;
 import pl.kozhanov.ProjectManagementSystem.service.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,29 +84,54 @@ public class ProjectController {
 
     @PostMapping("/add")
     @ResponseBody
-    public String addProject(
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
-            @RequestParam("projectManager") String projectManager,
-            @RequestParam(value = "roles[]", defaultValue = "none") String[] roles,
-            @RequestParam(value = "users[]", defaultValue = "none") String[] users) {
-        projectService.addProject(title, description, projectManager, roles, users);
-        return "OK";
+     public Map<String, String> addProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result, Model model) {
+        if(result.hasErrors())
+        {
+            Map<String, String> errorsMap = ControllerUtils.getErrors(result);
+            if(RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST) !=null)
+                {
+                 for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST))
+                     {
+                         errorsMap.put(str, "No such username in the data base");
+                     }
+                }
+            return errorsMap;
+        }
+        else {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("OK", "OK");
+            projectService.addProject(pmw.getTitle(), pmw.getDescription(), pmw.getProjectManager(), pmw.getRoles(), pmw.getExistingUsers());
+            return map;
+        }
     }
+
+
 
 
     @PostMapping("/save")
     @ResponseBody
-    public String saveProject(
-            @RequestParam("id") Integer projectId,
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
-            @RequestParam("projectManager") String projectManager,
-            @RequestParam(value = "roles[]", defaultValue = "none") String[] roles,
-            @RequestParam(value = "users[]", defaultValue = "none") String[] users) {
-        projectService.saveProject(projectId, title, description, projectManager, roles, users);
-        return "Project saved!";
+    public Map<String, String> saveProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result, Model model) {
+        if(result.hasErrors())
+        {
+            Map<String, String> errorsMap = ControllerUtils.getErrors(result);
+            if(RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST) !=null)
+            {
+                for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST))
+                {
+                    errorsMap.put(str, "No such username in the data base");
+                }
+            }
+            return errorsMap;
+        }
+        else {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("OK", "OK");
+            projectService.saveProject(pmw.getProjectId(), pmw.getTitle(), pmw.getDescription(), pmw.getProjectManager(), pmw.getRoles(), pmw.getExistingUsers());
+            return map;
+        }
     }
+
+
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("delete/{projectId}")

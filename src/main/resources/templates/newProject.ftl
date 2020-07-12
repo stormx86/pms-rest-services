@@ -25,25 +25,51 @@
 
     <script>
         function createProject() {
-            var roles = [], users = [], object = {};
+            $('input[type=text]').each(function(){
+                $(this).attr("class","form-control");
+            })
+            $('textarea').each(function(){
+                $(this).attr("class","form-control");
+            })
+            $('.invalid-feedback d-block').each(function(){
+                $(this).attr("class","invalid-feedback");
+            })
+            $("[id$='response']").each(function(){
+                $(this).empty();
+            })
+
+            var roles = [], users = [], existingUsers=[];
             $("select").each(function () {
                 roles.push($(this).val());
             })
-            $('input[name="userMember"]').each(function(){
-                users.push($(this).val());
+            $('input[name="user_member"]').each(function(){
+                users.push($(this).val() + "!" + $(this).attr('id'));
+            })
+
+            $('input[name="user_member"]').each(function(){
+                existingUsers.push($(this).val());
             })
             var title = $('input[name="title"]').val();
             var description =$('textarea[name="description"]').val();
             var projectManager = $('input[name="projectManager"]').val();
             $.ajax({
-                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN":$("input[name='_csrf']").val()},
                 url: "/projects/add",
                 type: "POST",
-                data: {title: title, description: description, projectManager:projectManager, roles: roles, users: users},
-                success: function(response){
-                    if(response="OK"){
-                        window.location.replace("http://localhost:8080/projects")
-                    }
+                data: {title: title, description: description, projectManager: projectManager, roles: roles, users: users, existingUsers: existingUsers},
+                traditional : true,
+                success: function(myresponse){
+
+                    $.each(myresponse , function( key, value ) {
+                        if(key =="OK") {
+                            window.location.replace("http://localhost:8080/projects")
+                        }
+                       else {
+                            $('#'+key).attr("class","form-control is-invalid");
+                            $('#'+key+'_fb').attr("class","invalid-feedback d-block");
+                            $('#'+key+'_response').append(value);
+                        }
+                    });
                 }
             })
         }
@@ -57,7 +83,7 @@
                     "                                <#list existingRoles as er>\n" +
                     "                                    <option value=\"${er}\">${er}</option>\n" +
                     "                                </#list>\n" +
-                    "                            </select></td><td><input class=\"form-control\" id=\"user_member\" type=\"text\"  name=\"userMember\" ></td><td>\n" +
+                    "                            </select></td><td><input class=\"form-control\" type=\"text\" name=\"user_member\"></td><td>\n" +
                     "                            <button onclick=\"deleteRole()\" class=\"btn btn-link btn-sm\">\n" +
                     "                                <i style=\"color: dimgray\" class=\"fa fa-trash\" aria-hidden=\"true\"></i>\n" +
                     "                            </button>\n" +
@@ -65,6 +91,8 @@
                 tableBody = $("#tb_roles tbody");
                 $(".form-control", markup).autocomplete(autocompl_opt);
                 tableBody.append(markup);
+                $('input[name="user_member"]').each(function () {
+                    $(this).attr('id', Math.round(new Date().getTime() + Math.random()*100));})
             });
         });
     </script>
@@ -94,40 +122,38 @@
                     <tbody>
                     <tr>
                         <td style="text-align: center; vertical-align: middle;"><span class="card-text"><h6>Project manager:</h6></span></td>
-                        <td><input class="form-control" id="project_manager" type="text" name="projectManager"></td>
+                        <td>
+                            <input class="form-control" id="projectManager" type="text" name="projectManager">
+                            <div class="invalid-feedback" id="projectManager_fb">
+                                <h7 id="projectManager_response"></h7>
+                            </div>
+                        </td>
                     </tr>
-<#--                    <tr>
-                        <td>
-                            <select  class="form-control" name="role">
-                                <#list existingRoles as er>
-                                    <option value="${er}">${er}</option>
-                                </#list>
-                            </select>
-                        </td>
-                        <td><input class="form-control" id="user_member" type="text"  name="userMember"></td>
-                        <td>
-                            <button onclick="deleteRole()" class="btn btn-link btn-sm">
-                                <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
-                            </button>
-                        </td>
-                    </tr>-->
                     </tbody>
                 </table>
             </div>
+            <div class="invalid-feedback" id="users_fb">
+                <h7 id="users_response"></h7>
+            </div>
             <br>
-
             <button id="add_role" class="btn btn-primary btn-sm">Add role</button><br><br>
             <button onclick="createProject()" class="btn btn-success btn-sm">Create</button><br>
         </div>
         <div class="col-6">
             <div class="card">
                 <h5 class="card-header">Project title:</h5>
-                <input class="form-control" type="text" name="title" placeholder="Enter project title">
+                <input class="form-control" type="text" id="title" name="title" placeholder="Enter project title">
+                <div class="invalid-feedback" id="title_fb">
+                    <h7 id="title_response"></h7>
+                </div>
             </div>
             <br><br><br>
             <div class="card">
                 <h5 class="card-header">Description:</h5>
-                <textarea class="form-control" name="description" rows="12" placeholder="Enter project description"></textarea>
+                <textarea class="form-control" id="description" name="description" rows="12" placeholder="Enter project description"></textarea>
+                <div class="invalid-feedback" id="description_fb">
+                    <h7 id="description_response"></h7>
+                </div>
             </div>
 
         </div>

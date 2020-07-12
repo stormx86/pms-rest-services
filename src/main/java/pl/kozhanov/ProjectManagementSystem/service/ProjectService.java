@@ -37,37 +37,36 @@ public class ProjectService {
     public ProjectViewProjection findById(Integer id){return projectRepo.findById(id);}
 
 
-    public void addProject(String title, String description, String projectManager, String[] roles, String[] users){
+    public void addProject(String title, String description, String projectManager, List<String> roles, List<String> existingUsers){
         Project newProject = new Project(Instant.now(), title, description, userService.getCurrentLoggedInUsername(), projectManager, projectStatusService.findByStatusName("Waiting"));
-        if(!roles[0].equals("none")) {
+        if(roles != null) {
             Set<UserProjectRoleLink> uprlSet = new HashSet<>();
-            for (int i = 0; i < roles.length; i++) {
-                uprlSet.add(new UserProjectRoleLink(userService.findByUsername(users[i]), newProject, projectRoleService.findByRoleName(roles[i])));
+            for (int i = 0; i < roles.size(); i++) {
+                uprlSet.add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), newProject, projectRoleService.findByRoleName(roles.get(i))));
             }
-            //after authorization implementation change to findByUsername(currently authorized user) или как-то иначе добавить отдельно
-            //роль Creator к проекту. Если в списке при создании уже не будет роли Creator к выбору
             newProject.setUserProjectRoleLink(uprlSet);
         }
         projectRepo.saveAndFlush(newProject);
     }
 
-    public void deleteProject(Integer projectId){
-        Project project = projectRepo.getById(projectId);
-        projectRepo.delete(project);
-    }
 
-    public void saveProject(Integer id, String title, String description, String projectManager, String[] roles, String[] users){
+    public void saveProject(Integer id, String title, String description, String projectManager, List<String> roles, List<String> existingUsers){
         Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
         project.setProjectManager(projectManager);
         project.getUserProjectRoleLink().clear();
-        if(!roles[0].equals("none")) {
-            for (int i = 0; i < roles.length; i++) {
-                project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(users[i]), project, projectRoleService.findByRoleName(roles[i])));
+        if(roles != null) {
+            for (int i = 0; i < roles.size(); i++) {
+                project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), project, projectRoleService.findByRoleName(roles.get(i))));
             }
         }
         projectRepo.saveAndFlush(project);
+    }
+
+    public void deleteProject(Integer projectId){
+        Project project = projectRepo.getById(projectId);
+        projectRepo.delete(project);
     }
 
     public void changeProjectStatus(Integer id, String status){

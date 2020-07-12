@@ -28,4 +28,6 @@ public interface UserRepo extends JpaRepository<User, Integer> {
                     "WHERE p.id=:projectId")
     List<String> findAllUsersOnProject(@Param("projectId") Integer projectId);
 
+
+
 }

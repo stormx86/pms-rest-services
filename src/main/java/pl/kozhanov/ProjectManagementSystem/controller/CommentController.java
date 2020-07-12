@@ -24,8 +24,11 @@ public class CommentController {
     public String addNewComment(
             @RequestParam("id") Integer projectId,
             @RequestParam("commentText") String commentText) {
-        projectService.addNewComment(projectId, commentText);
-        return "Comment added!";
+        if(commentText.equals("")) return "Empty comment";
+        else {
+            projectService.addNewComment(projectId, commentText);
+            return "Comment added!";
+        }
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

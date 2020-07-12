@@ -43,6 +43,12 @@
 
     <script>
         function addComment() {
+            $('#newComment').attr("class","form-control");
+            $('.invalid-feedback d-block').each(function(){
+                $(this).attr("class","invalid-feedback");
+            })
+            $('#comment_response').empty();
+
             var commentText =$('textarea[name="newComment"]').val();
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
@@ -50,10 +56,16 @@
                 type: "POST",
                 data: {id: ${project.getId()}, commentText: commentText},
                 success: function(response){
-                    if(response == "Comment added!")
+                    if(response == "Comment added!") {
                         $("#comments").load(" #comments");
                         $("#add_comment").collapse('hide');
                         $("#newComment").val("");
+                    }
+                    else {
+                        $('#newComment').attr("class","form-control is-invalid");
+                        $('#comment_fb').attr("class","invalid-feedback d-block");
+                        $('#comment_response').append("Comment can't be empty!");
+                    }
                 }
             })
         }
@@ -78,10 +90,6 @@
 
 </head>
 <body>
-
-
-
-
 <div class="container-fluid">
     <@m.menu/>
     <br>
@@ -115,7 +123,6 @@
                     <br>
                     <div class="card">
                         <h5 class="card-header">Project status</h5>
-
                             <select onChange="changeStatus()" class="form-control" id="sta" name="sta">
                                 <#list statuses as status>
                                     <option value="${status}">${status}</option>
@@ -149,6 +156,9 @@
                     <div class="row">
                         <div class="col">
                             <textarea class="form-control" name="newComment" id="newComment" rows="4" ></textarea>
+                            <div class="invalid-feedback" id="comment_fb">
+                                <h7 id="comment_response"></h7>
+                            </div>
                         </div>
                         <div class="col-2">
                             <button onclick="addComment()" class="btn btn-success btn-sm">
@@ -185,7 +195,7 @@
                             </@security.authorize>
                         </div>
                         <div class="row">
-                            <div class="col"><span class="card-text">${comment.getCommentText()}</span><hr/></div>
+                            <div class="col"><span class="card-text" style="white-space:pre-wrap">${comment.getCommentText()}</span><hr/></div>
                         </div>
                     </#list>
                     <#else>

@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href ="../../css/main.css">
     <title>Edit project</title>
 
+
     <script>
         var autocompl_opt = {source: "/projects/getUserNames", minLength: 2};
         $(document).ready(function autocompleteReady () {
@@ -36,12 +37,32 @@
 
     <script>
         function saveProject() {
-            var roles = [], users = [];
-            $("select").each(function () {
-               roles.push($(this).val());
+            $("[name='user_member']").each(function(){
+                $(this).attr("id", Math.round(new Date().getTime() + Math.random()*100));});
+
+            $('input[type=text]').each(function(){
+                $(this).attr("class","form-control");
             })
-            $('input[name="userMember"]').each(function(){
-                users.push($(this).val());
+            $('textarea').each(function(){
+                $(this).attr("class","form-control");
+            })
+            $('.invalid-feedback d-block').each(function(){
+                $(this).attr("class","invalid-feedback");
+            })
+            $("[id$='response']").each(function(){
+                $(this).empty();
+            })
+
+            var roles = [], users = [], existingUsers=[];
+            $("select").each(function () {
+                roles.push($(this).val());
+            })
+            $('input[name="user_member"]').each(function(){
+                users.push($(this).val() + "!" + $(this).attr('id'));
+            })
+
+            $('input[name="user_member"]').each(function(){
+                existingUsers.push($(this).val());
             })
             var title = $('input[name="title"]').val();
             var description =$('textarea[name="description"]').val();
@@ -50,11 +71,22 @@
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/projects/save",
                 type: "POST",
-                data: {id: ${project.getId()}, title: title, description: description, projectManager: projectManager, roles: roles, users: users},
-                success: function(response){
-                    $("#save_success").empty();
-                    $("#save_success").append(response);
-                    $("#save_success").delay(2000).fadeOut("slow", "swing");
+                data: {projectId: ${project.getId()}, title: title, description: description, projectManager: projectManager, roles: roles, users: users, existingUsers: existingUsers},
+                traditional : true,
+                success: function(myresponse){
+
+                    $.each(myresponse , function( key, value ) {
+                        if(key =="OK") {
+                            $("#save_success").empty();
+                            $("#save_success").append("Project saved");
+                            $("#save_success").delay(2000).fadeOut("slow", "swing");
+                        }
+                        else {
+                            $('#'+key).attr("class","form-control is-invalid");
+                            $('#'+key+'_fb').attr("class","invalid-feedback d-block");
+                            $('#'+key+'_response').append(value);
+                        }
+                    });
                 }
             })
         }
@@ -77,7 +109,7 @@
                     "                                <#list existingRoles as er>\n" +
                     "                                    <option value=\"${er}\">${er}</option>\n" +
                     "                                </#list>\n" +
-                    "                            </select></td><td><input class=\"form-control\" id=\"user_member\" type=\"text\"  name=\"userMember\" ></td><td>\n" +
+                    "                            </select></td><td><input class=\"form-control\" type=\"text\"  name=\"user_member\" ></td><td>\n" +
                    "                            <button onclick=\"deleteRole()\" class=\"btn btn-link btn-sm\">\n" +
                    "                                <i style=\"color: dimgray\" class=\"fa fa-trash\" aria-hidden=\"true\"></i>\n" +
                    "                            </button>\n" +
@@ -85,6 +117,8 @@
                 tableBody = $("#tb_roles tbody");
                 $(".form-control", markup).autocomplete(autocompl_opt);
                 tableBody.append(markup);
+                $('input[name="user_member"]').each(function () {
+                    $(this).attr('id', Math.round(new Date().getTime() + Math.random()*100));})
             });
         });
     </script>
@@ -114,7 +148,12 @@
                     </tr>
                     <tr>
                         <td style="text-align: center; vertical-align: middle;"><span class="card-text"><h6>Project manager:</h6></span></td>
-                        <td><input class="form-control" id="project_manager" type="text" name="projectManager" value="${project.projectManager}"></td>
+                        <td>
+                            <input class="form-control" id="projectManager" type="text" name="projectManager" value="${project.projectManager}">
+                            <div class="invalid-feedback" id="projectManager_fb">
+                                <h7 id="projectManager_response"></h7>
+                            </div>
+                        </td>
                     </tr>
                     <#list project.roleUser as ru>
                         <tr>
@@ -125,7 +164,7 @@
                                     </#list>
                                 </select>
                             </td>
-                            <td><input class="form-control" id="user_member" type="text"  name="userMember" value="${ru?keep_after(":")}"></td>
+                            <td><input class="form-control" type="text"  name="user_member" value="${ru?keep_after(":")}"></td>
                             <td>
                                 <button onclick="deleteRole()" class="btn btn-link btn-sm">
                                     <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
@@ -135,7 +174,9 @@
                     </#list>
                     </tbody>
                 </table>
-
+            </div>
+            <div class="invalid-feedback" id="users_fb">
+                <h7 id="users_response"></h7>
             </div>
             <br>
             <button id="add_role" class="btn btn-primary btn-sm">Add role</button><br><br>
@@ -145,12 +186,18 @@
         <div class="col-6">
             <div class="card">
                 <h5 class="card-header">Project title:</h5>
-                <input class="form-control" type="text" name="title" value="${project.title}">
+                <input class="form-control" type="text" id="title" name="title" value="${project.title}">
+                <div class="invalid-feedback" id="title_fb">
+                    <h7 id="title_response"></h7>
+                </div>
             </div>
 <br><br><br>
             <div class="card">
                 <h5 class="card-header">Description:</h5>
-                <textarea class="form-control" name="description"  rows="12">${project.description}</textarea>
+                <textarea class="form-control" id="description" name="description" rows="12">${project.description}</textarea>
+                <div class="invalid-feedback" id="description_fb">
+                    <h7 id="description_response"></h7>
+                </div>
             </div>
         </div>
     </div>

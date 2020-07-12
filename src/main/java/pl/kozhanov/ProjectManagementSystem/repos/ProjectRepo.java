@@ -33,7 +33,7 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
         @Query("SELECT u FROM User u WHERE u.status = ?1 and u.name = ?2")
         User findUserByStatusAndName(Integer status, String name);*/
 
-    @Query( nativeQuery = true,
+/*    @Query( nativeQuery = true,
             value = "SELECT p.id as id, p.created_at as createdAt, p.title as title, s.status_name as status, u.username as pmName, " +
                     "(SELECT u2.username from usr u2 join user_project_role_link l on u2.id = l.user_id join project_role r on l.projectroles_id = r.id where l.project_id = p.id and r.role_name='Creator') as creatorName " +
                     "FROM project as p " +
@@ -82,7 +82,7 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
                     "WHERE pr.id=1 and u.username=:projectManagerFilter and (SELECT u2.username from usr u2 join user_project_role_link l on u2.id = l.user_id join project_role r on l.projectroles_id = r.id where l.project_id = p.id and r.id=0 and u2.username=:createdByFilter) is not null " +
                     "order by p.created_at desc ")
     List<ProjectMainProjection> findByProjectManagerAndCreator(@Param("projectManagerFilter") String projectManagerFilter,
-                                                               @Param("createdByFilter") String createdByFilter);
+                                                               @Param("createdByFilter") String createdByFilter);*/
 }
 
 
