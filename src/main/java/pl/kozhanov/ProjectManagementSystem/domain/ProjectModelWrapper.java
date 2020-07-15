@@ -1,11 +1,9 @@
 package pl.kozhanov.ProjectManagementSystem.domain;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import pl.kozhanov.ProjectManagementSystem.service.validation.ProjectManagerConstraint;
 import pl.kozhanov.ProjectManagementSystem.service.validation.UserMemberConstraint;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 public class ProjectModelWrapper {

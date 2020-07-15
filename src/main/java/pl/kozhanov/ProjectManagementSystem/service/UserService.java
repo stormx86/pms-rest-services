@@ -1,19 +1,17 @@
 package pl.kozhanov.ProjectManagementSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.kozhanov.ProjectManagementSystem.domain.GlobalRole;
-import pl.kozhanov.ProjectManagementSystem.domain.Project;
 import pl.kozhanov.ProjectManagementSystem.domain.User;
 import pl.kozhanov.ProjectManagementSystem.repos.UserRepo;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,20 +25,23 @@ public class UserService implements UserDetailsService {
     @Autowired
     ProjectService projectService;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public List<User> findAll(){
        return userRepo.findAll();
     }
 
 public User findByUsername(String username){ return  userRepo.findByUsername(username); }
 
-public String[] findAllNames(){
+/*public String[] findAllNames(){
     List<String> usernames = new ArrayList<>();
     for(User user: userRepo.findAll()){
         usernames.add(user.getUsername());
     }
 
     return usernames.toArray(new String[0]);
-}
+}*/
 
     //usernames for autocomplete
 public List<String> findByUsernameLike(String term)
@@ -85,6 +86,14 @@ public boolean isProjectManager(String currentLoggedInUser, Integer projectId){
         else return false;
     }
 
+public boolean hasProjectAuthorities(String currentLoggedInUser, Integer projectId){
+    if(!findAllUsersOnProject(projectId).contains(currentLoggedInUser) &&
+            !isAdmin() &&
+            !isCreator(currentLoggedInUser, projectId) &&
+            !isProjectManager(currentLoggedInUser, projectId)) return false;
+    else return true;
+}
+
 public String addUser(String username){
         for(User u:userRepo.findAll())
         {
@@ -93,9 +102,9 @@ public String addUser(String username){
         }
         User user = new User();
         user.setUsername(username);
-        //as option add "email" filed to User entity, enter username & email and send random(regular expression) password by email;
+        //as option add "email" field to User entity, enter username & email and send random(regular expression) password by email;
         //option "change password by user" should be added
-        user.setPassword("1");
+        user.setPassword(passwordEncoder.encode(username));
         user.setActive(true);
         user.setGlobalRoles(Collections.singleton(GlobalRole.USER));
         userRepo.save(user);
@@ -124,6 +133,13 @@ public String addUser(String username){
 
     public void deleteUser(User user){
         userRepo.delete(user);
+    }
+
+
+    public void changeUserPassword(String username, String password){
+        User user = userRepo.findByUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        userRepo.save(user);
     }
 
 

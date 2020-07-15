@@ -1,6 +1,8 @@
 package pl.kozhanov.ProjectManagementSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.kozhanov.ProjectManagementSystem.domain.Comment;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
@@ -10,7 +12,6 @@ import pl.kozhanov.ProjectManagementSystem.repos.ProjectRepo;
 
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -83,43 +84,51 @@ public class ProjectService {
         projectRepo.saveAndFlush(project);
     }
 
-    public List<ProjectViewProjection> checkIfCurrentLoggedInUserIsMember(List<ProjectViewProjection> projectList)
-    {
-        String currentLoggedInUser = userService.getCurrentLoggedInUsername();
-        for(Iterator<ProjectViewProjection> it = projectList.iterator(); it.hasNext();)
-        {
-            ProjectViewProjection p = it.next();
-            if(!userService.findAllUsersOnProject(p.getId()).contains(currentLoggedInUser) &&
-            !userService.isCreator(currentLoggedInUser, p.getId()) &&
-            !userService.isProjectManager(currentLoggedInUser, p.getId()) &&
-            !userService.isAdmin())
-            {
-                it.remove();
-            }
-        }
-        return projectList;
-    }
 
-    public List<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter){
+    public Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter, Pageable pageable){
         //if no one filter selected
         if(projectManagerFilter.equals("") && createdByFilter.equals(""))
         {
-            return checkIfCurrentLoggedInUserIsMember(projectRepo.findAllByOrderByCreatedAtDesc());
+            if(userService.isAdmin())
+                {
+                    return projectRepo.findAllByOrderByCreatedAtDesc(pageable);
+                }
+            else {
+                return projectRepo.findAllWhereUserIsMember(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), pageable);
+            }
         }
         //if filter by ProjectManager selected
         else if (!projectManagerFilter.equals("") && createdByFilter.equals(""))
         {
-            return checkIfCurrentLoggedInUserIsMember(projectRepo.findAllByProjectManagerOrderByCreatedAtDesc(projectManagerFilter));
+            if(userService.isAdmin())
+            {
+                return projectRepo.findAllByProjectManagerOrderByCreatedAtDesc(projectManagerFilter, pageable);
+            }
+            else {
+                return projectRepo.findAllWhereUserIsMemberByProjectManager(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, pageable);
+            }
         }
         //if filter by Creator selected
         else if(projectManagerFilter.equals("") && !createdByFilter.equals(""))
         {
-            return checkIfCurrentLoggedInUserIsMember(projectRepo.findAllByCreatorOrderByCreatedAtDesc(createdByFilter));
+            if(userService.isAdmin())
+            {
+                return projectRepo.findAllByCreatorOrderByCreatedAtDesc(createdByFilter, pageable);
+            }
+            else {
+                return projectRepo.findAllWhereUserIsMemberByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), createdByFilter, pageable);
+            }
         }
         //if filter by ProjectManager & Creator selected | if(!projectManagerFilter.equals("") && !createdByFilter.equals(""))
         else
         {
-            return checkIfCurrentLoggedInUserIsMember(projectRepo.findAllByProjectManagerAndCreatorOrderByCreatedAtDesc(projectManagerFilter, createdByFilter));
+            if(userService.isAdmin())
+            {
+                return projectRepo.findAllByProjectManagerAndCreatorOrderByCreatedAtDesc(projectManagerFilter, createdByFilter, pageable);
+            }
+            else {
+                return projectRepo.findAllWhereUserIsMemberByProjectManagerAndByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, createdByFilter, pageable);
+            }
         }
 
     }

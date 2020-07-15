@@ -1,6 +1,8 @@
 package pl.kozhanov.ProjectManagementSystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,10 +38,12 @@ public class ProjectController {
     public String showProjects(
             @RequestParam(defaultValue = "") String projectManagerFilter,
             @RequestParam(defaultValue = "") String createdByFilter,
-            Map<String, Object> model){
-        List<ProjectViewProjection> projects = projectService.findProjects(projectManagerFilter, createdByFilter);
-        model.put("projects", projects);
+            Map<String, Object> model,
+            Pageable pageable){
+        Page<ProjectViewProjection> projectsPage = projectService.findProjects(projectManagerFilter, createdByFilter, pageable);
+        model.put("page", projectsPage);
         model.put("loggedUser", userService.getCurrentLoggedInUsername());
+        model.put("url", "/projects");
         return "projects";
     }
 
@@ -50,10 +54,7 @@ public class ProjectController {
             model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
             // if currently logged user is not a member of the project --> Access denied
             String currentLoggedInUser = userService.getCurrentLoggedInUsername();
-            if(!userService.findAllUsersOnProject(projectId).contains(currentLoggedInUser) &&
-                !userService.isCreator(currentLoggedInUser, projectId) &&
-                !userService.isProjectManager(currentLoggedInUser, projectId) &&
-                !userService.isAdmin()) return "project403";
+            if(!userService.hasProjectAuthorities(currentLoggedInUser, projectId)) return "project403";
             else return "openProject";
     }
 

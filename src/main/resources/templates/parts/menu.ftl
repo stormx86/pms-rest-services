@@ -2,7 +2,7 @@
     <#assign security=JspTaglibs["http://www.springframework.org/security/tags"]/>
     <div class="row">
         <div class="col">
-            <span style="font-size: 16px" id="logged_user">Logged-in as: <b><i>${loggedUser}</i></b></span>
+            <span style="font-size: 16px" id="logged_user">Logged-in as: <b><i><a href="/user/${loggedUser}">${loggedUser}</a></i></b></span>
             <br><br>
 
                     <form action="/logout" method="post">

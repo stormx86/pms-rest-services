@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <#import "parts/menu.ftl" as m>
+    <#import "parts/pager.ftl" as p>
     <title>Welcome to the Project Management System</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -77,7 +78,6 @@
             </button>
         </div>
     </div>
-
     <div class="row collapse" id="filter_checkboxes">
         <div class="col-3">
             <br>
@@ -96,17 +96,14 @@
                     Created By
                 </label>
             </div>
-
         </div>
     </div>
-
     <div class="row">
         <div class="col-2 tb_filter">
 
         </div>
     </div>
     <br>
-
     <div class="row">
         <div class="col">
             <table class="table table-hover table-bordered">
@@ -121,7 +118,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <#list projects as project>
+                <#list page.content as project>
                     <tr>
                         <th scope="row" onclick="location.href='/projects/${project.id}'">${project.id}</th>
                         <td onclick="location.href='/projects/${project.id}'">${project.createdAtFormatted}</td>
@@ -136,6 +133,11 @@
 
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <@p.pager url page/>
         </div>
     </div>
 </div>
