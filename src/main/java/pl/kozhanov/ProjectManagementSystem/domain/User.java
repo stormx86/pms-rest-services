@@ -2,8 +2,10 @@ package pl.kozhanov.ProjectManagementSystem.domain;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.kozhanov.ProjectManagementSystem.service.validation.NewUserConstraint;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +17,8 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @NotBlank(message = "Username field can't be empty")
+    @NewUserConstraint
     private String username;
     private String password;
     private boolean active;

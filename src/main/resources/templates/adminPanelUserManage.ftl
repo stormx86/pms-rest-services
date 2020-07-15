@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
 
     <!-- Required meta tags -->
@@ -13,34 +13,6 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href ="../css/main.css">
-
-    <script>
-        function addNewUser() {
-            var newUsername =$('input[name="newUsername"]').val();
-            $.ajax({
-                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
-                url: "/admin/addUser",
-                type: "POST",
-                data: {newUsername: newUsername},
-                success: function(response){
-                    if(response=="Username already exists") {
-                        $("#createResponse").empty();
-                        $("#createResponse").attr("style", "color:red");
-                        $("#createResponse").append(response);
-                        response.clear();
-                    }
-                    else {
-                        $("#createResponse").empty();
-                        $("#createResponse").attr("style", "color:green");
-                        $("#createResponse").append(response);
-                        $("#userList").load(" #userList");
-                        response.clear();
-                    }
-                }
-            })
-        }
-    </script>
-
 
 </head>
 <body>
@@ -67,13 +39,20 @@
                     <h5 class="card-title">Create new user</h5>
                     <div class="row">
                         <div class="col-2">
-                            <input class="form-control" type="text" name="newUsername" placeholder="Enter username">
-                            <p class="card-text" id="createResponse"></p>
-
+                            <form id="addUser" action="/admin/addUser" method="post">
+                            <input class="form-control ${(username??)?string('is-invalid', '')}" type="text" name="username" placeholder="Enter username">
+                                <#if username??>
+                                    <div class="invalid-feedback">
+                                        ${username}
+                                    </div>
+                                </#if>
+                            </form>
                         </div>
                         <div class="col-1">
-                            <button onclick="addNewUser()" class="btn btn-success btn-sm">Create</button>
+                            <input type="hidden" name="_csrf" value="${_csrf.token}" form="addUser"/>
+                            <input type="submit" class="btn btn-success btn-sm" value="Create" form="addUser">
                         </div>
+
                     </div>
                     <hr>
                     <h5 class="card-title">User List</h5>

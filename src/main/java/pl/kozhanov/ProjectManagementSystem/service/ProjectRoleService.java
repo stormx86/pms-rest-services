@@ -27,15 +27,8 @@ public class ProjectRoleService {
         return existingRoles;
     };
 
-    public String addNewProjectRole(String newProjectRole){
-        for(ProjectRole pr:projectRoleRepo.findAll())
-        {
-            if (pr.getRoleName().equals(newProjectRole)) return "ProjectRole already exists";
-        }
-        ProjectRole projectRole = new ProjectRole();
-        projectRole.setRoleName(newProjectRole);
+    public void addNewProjectRole(ProjectRole projectRole){
         projectRoleRepo.save(projectRole);
-        return "Successfully created!";
     }
 
     public void deleteProjectRole(ProjectRole projectRole){

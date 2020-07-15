@@ -94,21 +94,12 @@ public boolean hasProjectAuthorities(String currentLoggedInUser, Integer project
     else return true;
 }
 
-public String addUser(String username){
-        for(User u:userRepo.findAll())
-        {
-            if (u.getUsername().equals(username)) return "Username already exists";
-
-        }
-        User user = new User();
-        user.setUsername(username);
+public void addUser(User user){
         //as option add "email" field to User entity, enter username & email and send random(regular expression) password by email;
-        //option "change password by user" should be added
-        user.setPassword(passwordEncoder.encode(username));
+        user.setPassword(passwordEncoder.encode(user.getUsername()));
         user.setActive(true);
         user.setGlobalRoles(Collections.singleton(GlobalRole.USER));
         userRepo.save(user);
-        return "Successfully created!";
 }
 
     public String saveUser(Integer userId, String newUsername, String[] roles){

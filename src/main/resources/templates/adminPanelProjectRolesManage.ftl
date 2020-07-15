@@ -17,35 +17,6 @@
 
     <link rel="stylesheet" type="text/css" href ="../css/main.css">
 
-
-    <script>
-        function addNewProjectRole() {
-            var newProjectRole =$('input[name="newProjectRole"]').val();
-            $.ajax({
-                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
-                url: "/admin/addNewProjectRole",
-                type: "POST",
-                data: {newProjectRole: newProjectRole},
-                success: function(response){
-                    if(response=="ProjectRole already exists") {
-                        $("#createResponse").empty();
-                        $("#createResponse").attr("style", "color:red");
-                        $("#createResponse").append(response);
-                        response.clear();
-                    }
-                    else {
-                        $("#createResponse").empty();
-                        $("#createResponse").attr("style", "color:green");
-                        $("#createResponse").append(response);
-                        $("#projectRoleList").load(" #projectRoleList");
-                        response.clear();
-                    }
-                }
-            })
-        }
-    </script>
-
-
 </head>
 <body>
 
@@ -71,12 +42,18 @@
                     <h5 class="card-title">Create new Project Role</h5>
                     <div class="row">
                         <div class="col-2">
-                            <input class="form-control" type="text" name="newProjectRole" placeholder="Enter Project Role">
-                            <p class="card-text" id="createResponse"></p>
-
+                            <form id="addProjectRole" action="/admin/addNewProjectRole" method="post">
+                                <input class="form-control ${(roleName??)?string('is-invalid', '')}" type="text" name="roleName" placeholder="Enter Project Role">
+                                <#if roleName??>
+                                    <div class="invalid-feedback">
+                                        ${roleName}
+                                    </div>
+                                </#if>
+                            </form>
                         </div>
                         <div class="col-1">
-                            <button onclick="addNewProjectRole()" class="btn btn-success btn-sm">Create</button>
+                            <input type="hidden" name="_csrf" value="${_csrf.token}" form="addProjectRole"/>
+                            <input type="submit" class="btn btn-success btn-sm" value="Create" form="addProjectRole">
                         </div>
                     </div>
                     <hr>
