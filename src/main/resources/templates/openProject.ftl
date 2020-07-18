@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <#assign security=JspTaglibs["http://www.springframework.org/security/tags"]/>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,7 +27,7 @@
             var id = ${project.getId()};
             var status = $("#sta option:selected").val();
             $.ajax({
-                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/projects/changeStatus",
                 type: "POST",
                 data: {id: id, status: status},
@@ -42,17 +43,29 @@
 
     <script>
         function addComment() {
+            $('#newComment').attr("class","form-control");
+            $('.invalid-feedback d-block').each(function(){
+                $(this).attr("class","invalid-feedback");
+            })
+            $('#comment_response').empty();
+
             var commentText =$('textarea[name="newComment"]').val();
             $.ajax({
-                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/comments/addNew",
                 type: "POST",
                 data: {id: ${project.getId()}, commentText: commentText},
                 success: function(response){
-                    if(response == "Comment added!")
+                    if(response == "Comment added!") {
                         $("#comments").load(" #comments");
                         $("#add_comment").collapse('hide');
                         $("#newComment").val("");
+                    }
+                    else {
+                        $('#newComment').attr("class","form-control is-invalid");
+                        $('#comment_fb').attr("class","invalid-feedback d-block");
+                        $('#comment_response').append("Comment can't be empty!");
+                    }
                 }
             })
         }
@@ -61,7 +74,7 @@
     <script>
         function deleteComment(comment_id) {
             $.ajax({
-                //headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
+                headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
                 url: "/comments/delComment",
                 type: "POST",
                 data: {commentId: comment_id},
@@ -77,10 +90,6 @@
 
 </head>
 <body>
-
-
-
-
 <div class="container-fluid">
     <@m.menu/>
     <br>
@@ -89,6 +98,11 @@
             <form action="/projects/edit/${project.id}" method="get">
                 <input class="btn btn-primary btn-sm" type="submit" value="Edit project"/>
             </form>
+            <@security.authorize access="hasAnyAuthority('ADMIN')">
+            <form action="/projects/delete/${project.id}" method="get">
+                <input class="btn btn-danger btn-sm" type="submit" value="Delete project"/>
+            </form>
+            </@security.authorize>
         </div>
     </div>
     <br>
@@ -99,6 +113,8 @@
                     <div class="card">
                         <h5 class="card-header">Project members</h5>
                         <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><p class="card-text">Creator: ${project.creator}</p></li>
+                            <li class="list-group-item"><p class="card-text">Project Manager: ${project.projectManager}</p></li>
                             <#list project.roleUser as roleUser>
                             <li class="list-group-item"><p class="card-text">${roleUser?keep_before(":")}: ${roleUser?keep_after(":")}</p></li>
                             </#list>
@@ -107,7 +123,6 @@
                     <br>
                     <div class="card">
                         <h5 class="card-header">Project status</h5>
-
                             <select onChange="changeStatus()" class="form-control" id="sta" name="sta">
                                 <#list statuses as status>
                                     <option value="${status}">${status}</option>
@@ -136,11 +151,14 @@
         </div>
         <div class="col-6">
             <div class="card collapse" id="add_comment">
-                <h6 class="card-header" style="background: #ECF4E5">Add new comment:</h6>
+                <h6 class="card-header">Add new comment:</h6>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
                             <textarea class="form-control" name="newComment" id="newComment" rows="4" ></textarea>
+                            <div class="invalid-feedback" id="comment_fb">
+                                <h7 id="comment_response"></h7>
+                            </div>
                         </div>
                         <div class="col-2">
                             <button onclick="addComment()" class="btn btn-success btn-sm">
@@ -168,14 +186,16 @@
                         <div class="row">
                             <div class="col"><h6 class="card-title">${comment.getUser().getUsername()}</h6></div>
                             <div class="col-3"><span class="card-text">${comment.getCreatedAtView()}</span></div>
+                            <@security.authorize access="hasAnyAuthority('ADMIN')">
                             <div class="col-1">
                                 <button onclick="deleteComment(this.id)" id="${comment.getId()}" class="btn btn-link btn-sm" title="Delete comment">
                                     <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
+                            </@security.authorize>
                         </div>
                         <div class="row">
-                            <div class="col"><span class="card-text">${comment.getCommentText()}</span><hr/></div>
+                            <div class="col"><span class="card-text" style="white-space:pre-wrap">${comment.getCommentText()}</span><hr/></div>
                         </div>
                     </#list>
                     <#else>

@@ -1,6 +1,9 @@
 package pl.kozhanov.ProjectManagementSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pl.kozhanov.ProjectManagementSystem.domain.Comment;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
@@ -36,31 +39,36 @@ public class ProjectService {
     public ProjectViewProjection findById(Integer id){return projectRepo.findById(id);}
 
 
-    public void addProject(String title, String description, String[] roles, String[] users){
-        Project newProject = new Project(Instant.now(), title, description, projectStatusService.findByStatusName("Waiting"));
-        Set<UserProjectRoleLink> uprlSet = new HashSet<>();
-        for(int i=0; i<roles.length; i++)
-        {
-            uprlSet.add(new UserProjectRoleLink(userService.findByUsername(users[i]), newProject, projectRoleService.findByRoleName(roles[i])));
+    public void addProject(String title, String description, String projectManager, List<String> roles, List<String> existingUsers){
+        Project newProject = new Project(Instant.now(), title, description, userService.getCurrentLoggedInUsername(), projectManager, projectStatusService.findByStatusName("Waiting"));
+        if(roles != null) {
+            Set<UserProjectRoleLink> uprlSet = new HashSet<>();
+            for (int i = 0; i < roles.size(); i++) {
+                uprlSet.add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), newProject, projectRoleService.findByRoleName(roles.get(i))));
+            }
+            newProject.setUserProjectRoleLink(uprlSet);
         }
-        //after authorization implementation change to findByUsername(currently authorized user) или как-то иначе добавить отдельно
-        //роль Creator к проекту. Если в списке при создании уже не будет роли Creator к выбору
-        newProject.setUserProjectRoleLink(uprlSet);
         projectRepo.saveAndFlush(newProject);
     }
 
-    public void saveProject(Integer id, String title, String description, String[] roles, String[] users){
+
+    public void saveProject(Integer id, String title, String description, String projectManager, List<String> roles, List<String> existingUsers){
         Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
+        project.setProjectManager(projectManager);
         project.getUserProjectRoleLink().clear();
-
-        for(int i=0; i<roles.length; i++)
-            {
-                project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(users[i]), project, projectRoleService.findByRoleName(roles[i])));
+        if(roles != null) {
+            for (int i = 0; i < roles.size(); i++) {
+                project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), project, projectRoleService.findByRoleName(roles.get(i))));
             }
-
+        }
         projectRepo.saveAndFlush(project);
+    }
+
+    public void deleteProject(Integer projectId){
+        Project project = projectRepo.getById(projectId);
+        projectRepo.delete(project);
     }
 
     public void changeProjectStatus(Integer id, String status){
@@ -72,34 +80,69 @@ public class ProjectService {
 
     public void addNewComment(Integer id, String commentText){
         Project project = projectRepo.getById(id);
-        //after authorization implementation change to findByUsername(currently authorized user) или как-то иначе добавить отдельно
-        project.getComments().add(new Comment(Instant.now(), commentText, project, userService.findByUsername("Anton")));
+        String currentLoggedInUser = userService.getCurrentLoggedInUsername();
+        project.getComments().add(new Comment(Instant.now(), commentText, project, userService.findByUsername(currentLoggedInUser)));
         projectRepo.saveAndFlush(project);
     }
 
 
-    public List<ProjectMainProjection> findProjects(String projectManagerFilter, String createdByFilter){
-
+    public Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter, Pageable pageable){
+        //if no one filter selected
         if(projectManagerFilter.equals("") && createdByFilter.equals(""))
         {
-            return projectRepo.findAllForMainList();
+            if(userService.isAdmin())
+                {
+                    return projectRepo.getAll(pageable);
+                }
+            else {
+                return projectRepo.findAllWhereUserIsMember(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), pageable);
+            }
         }
-
+        //if filter by ProjectManager selected
         else if (!projectManagerFilter.equals("") && createdByFilter.equals(""))
         {
-            return projectRepo.findByProjectManager(projectManagerFilter);
+            if(userService.isAdmin())
+            {
+                return projectRepo.findAllByProjectManager(projectManagerFilter, pageable);
+            }
+            else {
+                return projectRepo.findAllWhereUserIsMemberByProjectManager(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, pageable);
+            }
         }
-
+        //if filter by Creator selected
         else if(projectManagerFilter.equals("") && !createdByFilter.equals(""))
         {
-            return  projectRepo.findByCreator(createdByFilter);
+            if(userService.isAdmin())
+            {
+                return projectRepo.findAllByCreator(createdByFilter, pageable);
+            }
+            else {
+                return projectRepo.findAllWhereUserIsMemberByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), createdByFilter, pageable);
+            }
         }
-        else if(!projectManagerFilter.equals("") && !createdByFilter.equals(""))
+        //if filter by ProjectManager & Creator selected | if(!projectManagerFilter.equals("") && !createdByFilter.equals(""))
+        else
         {
-            return  projectRepo.findByProjectManagerAndCreator(projectManagerFilter, createdByFilter);
+            if(userService.isAdmin())
+            {
+                return projectRepo.findAllByProjectManagerAndCreator(projectManagerFilter, createdByFilter, pageable);
+            }
+            else {
+                return projectRepo.findAllWhereUserIsMemberByProjectManagerAndByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, createdByFilter, pageable);
+            }
         }
 
-        else return null;
+    }
+
+    public Sort sortManage(Sort sort){
+        if(sort.isSorted()) {
+            if (sort.iterator().next().getDirection().isAscending()) {
+                sort=sort.descending();
+            } else {
+                sort=sort.ascending();
+            }
+        }
+        return sort;
     }
 
 

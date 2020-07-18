@@ -1,0 +1,20 @@
+.table tr {
+    cursor: pointer;
+}
+
+
+.card-header{
+    background-color: #cfecfa;
+}
+
+form {
+    display: inline-block;
+}
+
+.nav-link:not(.active){
+    color: #5c3700 !important;
+}
+
+.projects {
+    color:#000000;
+}

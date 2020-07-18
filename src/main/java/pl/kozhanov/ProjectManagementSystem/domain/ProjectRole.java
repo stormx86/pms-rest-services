@@ -1,6 +1,10 @@
 package pl.kozhanov.ProjectManagementSystem.domain;
 
+import pl.kozhanov.ProjectManagementSystem.service.validation.NewProjectRoleConstraint;
+import pl.kozhanov.ProjectManagementSystem.service.validation.NewUserConstraint;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
@@ -9,8 +13,10 @@ public class ProjectRole {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @NotBlank(message = "Role Name field can't be empty")
+    @NewProjectRoleConstraint
     private String roleName;
-    @OneToMany(mappedBy = "projectRole", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "projectRole", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
     public ProjectRole() {
