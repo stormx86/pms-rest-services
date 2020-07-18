@@ -9,7 +9,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <#import "parts/menu.ftl" as m>
-    <#import "parts/pager.ftl" as p>
+    <#import "parts/projectListPager.ftl" as p>
     <title>Welcome to the Project Management System</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -110,11 +110,11 @@
                 <thead style="background-color: #cfecfa">
                 <tr>
                     <th style="width: 8%" scope="col">Project #</th>
-                    <th style="width: 11%" scope="col">Created On</th>
-                    <th scope="col">Project name</th>
-                    <th style="width: 10%" scope="col">Status</th>
-                    <th style="width: 10%" scope="col">Project Manager</th>
-                    <th style="width: 10%" scope="col">Created By</th>
+                    <th style="width: 11%" scope="col"><a class="projects" href="${url}?page=${page.getNumber()}&size=${page.getSize()}&sort=createdAt,${nextSortDirection}">Created On</a></th>
+                    <th scope="col"><a class="projects" href="${url}?page=${page.getNumber()}&size=${page.getSize()}&sort=title,${nextSortDirection}">Project name</a></th>
+                    <th style="width: 10%" scope="col"><a class="projects" href="${url}?page=${page.getNumber()}&size=${page.getSize()}&sort=status,${nextSortDirection}">Status</a></th>
+                    <th style="width: 10%" scope="col"><a class="projects" href="${url}?page=${page.getNumber()}&size=${page.getSize()}&sort=projectManager,${nextSortDirection}">Project Manager</a></th>
+                    <th style="width: 10%" scope="col"><a class="projects" href="${url}?page=${page.getNumber()}&size=${page.getSize()}&sort=creator,${nextSortDirection}">Created By</a></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -137,7 +137,7 @@
     </div>
     <div class="row">
         <div class="col">
-            <@p.pager url page/>
+            <@p.pager url page sort nextSortDirection/>
         </div>
     </div>
 </div>

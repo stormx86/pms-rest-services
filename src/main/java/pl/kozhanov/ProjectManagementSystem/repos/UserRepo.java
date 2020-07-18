@@ -1,10 +1,12 @@
 package pl.kozhanov.ProjectManagementSystem.repos;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import pl.kozhanov.ProjectManagementSystem.domain.User;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface UserRepo extends JpaRepository<User, Integer> {
@@ -14,6 +16,8 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     User getById(Integer id);
 
     List<User> findAll();
+
+    Page<User> findAllByOrderByUsernameAsc(Pageable pageable);
 
     //usernames for autocomplete
     @Query("select u.username from User u where u.username LIKE %:term%")

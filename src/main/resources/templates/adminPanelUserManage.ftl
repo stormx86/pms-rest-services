@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <#import "parts/menu.ftl" as m>
+    <#import "parts/userListPager.ftl" as p>
     <title>Project Management System - Admin Panel - Manage Users</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -28,7 +29,7 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Manage Users</a>
+                            <a class="nav-link active" href="#"><b>Manage Users</b></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/admin/adminPanelProjectRolesManage">Manage Project Roles</a>
@@ -47,6 +48,12 @@
                                     </div>
                                 </#if>
                             </form>
+                            <br><br>
+                            <#if responseMessage??>
+                                <div class="alert alert-${responseMessage}" role="alert">
+                                    Successfully created!
+                                </div>
+                            </#if>
                         </div>
                         <div class="col-1">
                             <input type="hidden" name="_csrf" value="${_csrf.token}" form="addUser"/>
@@ -59,12 +66,17 @@
                     <div class="row">
                         <div class="col-2">
                             <ul class="list-group" id="userList">
-                                <#list users as user>
+                                <#list page.content as user>
                                 <li class="list-group-item"><a href="/admin/editUser/${user.id}">${user.username}</a></li>
                                 </#list>
                             </ul>
                         </div>
 
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <@p.pager url page/>
+                        </div>
                     </div>
 
                 </div>

@@ -17,6 +17,16 @@
 
     <script>
         function saveUser() {
+            $('input[type=text]').each(function(){
+                $(this).attr("class","form-control");
+            })
+            $('.invalid-feedback d-block').each(function(){
+                $(this).attr("class","invalid-feedback");
+            })
+            $("[id$='response']").each(function(){
+                $(this).empty();
+            })
+
             var newUsername =$('input[name="newUsername"]').val();
             var roles = [];
             $('input[type="checkbox"]:checked').each(function() {
@@ -28,17 +38,16 @@
                 type: "POST",
                 data: {id: ${user.id}, newUsername: newUsername, roles: roles},
                 success: function(response){
-                    if(response=="Username already exists") {
-                        $("#saveResponse").empty();
-                        $("#saveResponse").attr("style", "color:red");
-                        $("#saveResponse").append(response);
-                        response.clear();
-                    }
-                    else {
+                    if(response=="Successfully saved!") {
                         $("#saveResponse").empty();
                         $("#saveResponse").attr("style", "color:green");
                         $("#saveResponse").append(response);
                         response.clear();
+                    }
+                    else {
+                        $('#username').attr("class","form-control is-invalid");
+                        $('#username_fb').attr("class","invalid-feedback d-block");
+                        $('#username_response').append(response);
                     }
                 }
             })
@@ -67,11 +76,18 @@
                             <h6>Username:</h6>
                         </div>
                         <div class="col-5">
-                            <input type="text" class="form-control" name="newUsername" value="${user.username}">
+                            <input type="text" class="form-control" id="username" name="newUsername" value="${user.username}">
+                            <div class="invalid-feedback" id="username_fb">
+                                <h7 id="username_response"></h7>
+                            </div>
                         </div>
 
                         <div class="col-3">
                             <button onclick="saveUser()" class="btn btn-success btn-sm">Save User</button>
+                            <br><br>
+                            <form action="/admin/resetUserPassword/${user.id}" method="get">
+                                <input type="submit" class="btn btn-primary btn-sm" value="Reset password"/>
+                            </form>
                             <br><br>
                             <form action="/admin/deleteUser/${user.id}" method="get">
                                 <input type="submit" class="btn btn-danger btn-sm" value="Delete User"/>
@@ -88,6 +104,11 @@
                             </#list>
                             <br>
                             <p class="card-text" id="saveResponse"></p>
+                            <#if resetResponseMessage??>
+                                <div class="alert alert-${resetResponseMessage}" role="alert">
+                                    Password successfully reseted!
+                                </div>
+                            </#if>
                         </div>
                     </div>
                 </div>

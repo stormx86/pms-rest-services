@@ -1,6 +1,8 @@
 package pl.kozhanov.ProjectManagementSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +14,6 @@ import pl.kozhanov.ProjectManagementSystem.domain.GlobalRole;
 import pl.kozhanov.ProjectManagementSystem.domain.User;
 import pl.kozhanov.ProjectManagementSystem.repos.UserRepo;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class UserService implements UserDetailsService {
     public List<User> findAll(){
        return userRepo.findAll();
     }
+
+    public Page<User> findAllByOrderByUsernameAsc(Pageable pageable){return userRepo.findAllByOrderByUsernameAsc(pageable);}
 
 public User findByUsername(String username){ return  userRepo.findByUsername(username); }
 
@@ -107,7 +110,7 @@ public void addUser(User user){
         {
             //if newUsername is in userDB & newUsername != username of current userID
             if (u.getUsername().equals(newUsername) && !u.getUsername().equals(userRepo.getById(userId).getUsername())) return "Username already exists";
-
+            else if(newUsername.equals("")) return "Username field can't be empty";
         }
 
         User user = userRepo.getById(userId);
@@ -130,6 +133,12 @@ public void addUser(User user){
     public void changeUserPassword(String username, String password){
         User user = userRepo.findByUsername(username);
         user.setPassword(passwordEncoder.encode(password));
+        userRepo.save(user);
+    }
+
+    public void resetUserPassword(User user)
+    {
+        user.setPassword(passwordEncoder.encode(user.getUsername()));
         userRepo.save(user);
     }
 

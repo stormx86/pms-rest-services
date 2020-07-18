@@ -3,6 +3,7 @@ package pl.kozhanov.ProjectManagementSystem.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pl.kozhanov.ProjectManagementSystem.domain.Comment;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
@@ -91,7 +92,7 @@ public class ProjectService {
         {
             if(userService.isAdmin())
                 {
-                    return projectRepo.findAllByOrderByCreatedAtDesc(pageable);
+                    return projectRepo.getAll(pageable);
                 }
             else {
                 return projectRepo.findAllWhereUserIsMember(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), pageable);
@@ -102,7 +103,7 @@ public class ProjectService {
         {
             if(userService.isAdmin())
             {
-                return projectRepo.findAllByProjectManagerOrderByCreatedAtDesc(projectManagerFilter, pageable);
+                return projectRepo.findAllByProjectManager(projectManagerFilter, pageable);
             }
             else {
                 return projectRepo.findAllWhereUserIsMemberByProjectManager(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, pageable);
@@ -113,7 +114,7 @@ public class ProjectService {
         {
             if(userService.isAdmin())
             {
-                return projectRepo.findAllByCreatorOrderByCreatedAtDesc(createdByFilter, pageable);
+                return projectRepo.findAllByCreator(createdByFilter, pageable);
             }
             else {
                 return projectRepo.findAllWhereUserIsMemberByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), createdByFilter, pageable);
@@ -124,13 +125,24 @@ public class ProjectService {
         {
             if(userService.isAdmin())
             {
-                return projectRepo.findAllByProjectManagerAndCreatorOrderByCreatedAtDesc(projectManagerFilter, createdByFilter, pageable);
+                return projectRepo.findAllByProjectManagerAndCreator(projectManagerFilter, createdByFilter, pageable);
             }
             else {
                 return projectRepo.findAllWhereUserIsMemberByProjectManagerAndByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, createdByFilter, pageable);
             }
         }
 
+    }
+
+    public Sort sortManage(Sort sort){
+        if(sort.isSorted()) {
+            if (sort.iterator().next().getDirection().isAscending()) {
+                sort=sort.descending();
+            } else {
+                sort=sort.ascending();
+            }
+        }
+        return sort;
     }
 
 

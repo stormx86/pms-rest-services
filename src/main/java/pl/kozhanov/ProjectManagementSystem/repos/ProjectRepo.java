@@ -4,9 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import pl.kozhanov.ProjectManagementSystem.domain.Project;
-import pl.kozhanov.ProjectManagementSystem.service.ProjectMainProjection;
 import pl.kozhanov.ProjectManagementSystem.service.ProjectViewProjection;
 
 import java.util.List;
@@ -19,13 +17,17 @@ public interface ProjectRepo extends JpaRepository<Project, Long> {
 
         Project getById(Integer id);
 
+        @Query("SELECT p.id as id, p.createdAt as createdAt, p.title as title, p.status as status, p.projectManager as projectManager, p.creator as creator " +
+                "FROM Project p ")
+        Page<ProjectViewProjection> getAll(Pageable pageable);
+
         Page<ProjectViewProjection> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-        Page<ProjectViewProjection> findAllByCreatorOrderByCreatedAtDesc(String creator, Pageable pageable);
+        Page<ProjectViewProjection> findAllByCreator(String creator, Pageable pageable);
 
-        Page<ProjectViewProjection> findAllByProjectManagerOrderByCreatedAtDesc(String projectManager, Pageable pageable);
+        Page<ProjectViewProjection> findAllByProjectManager(String projectManager, Pageable pageable);
 
-        Page<ProjectViewProjection> findAllByProjectManagerAndCreatorOrderByCreatedAtDesc(String projectManager, String creator, Pageable pageable);
+        Page<ProjectViewProjection> findAllByProjectManagerAndCreator(String projectManager, String creator, Pageable pageable);
 
         @Query("SELECT p.id as id, p.createdAt as createdAt, p.title as title, p.status as status, p.projectManager as projectManager, p.creator as creator " +
                         "FROM Project p, Project p2 " +

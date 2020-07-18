@@ -34,7 +34,7 @@
                             <a class="nav-link" href="/admin/adminPanelUserManage">Manage Users</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Manage Project Roles</a>
+                            <a class="nav-link active" href="#"><b>Manage Project Roles</b></a>
                         </li>
                     </ul>
                 </div>
@@ -50,6 +50,17 @@
                                     </div>
                                 </#if>
                             </form>
+                            <br><br>
+                            <#if responseCreated??>
+                                <div class="alert alert-${responseCreated}" role="alert">
+                                    Successfully created!
+                                </div>
+                            </#if>
+                            <#if responseDeleted??>
+                                <div class="alert alert-${responseDeleted}" role="alert">
+                                    Successfully deleted!
+                                </div>
+                            </#if>
                         </div>
                         <div class="col-1">
                             <input type="hidden" name="_csrf" value="${_csrf.token}" form="addProjectRole"/>
@@ -66,11 +77,20 @@
                                     <li class="list-group-item">
                                         <div class="row">
                                         <div class="col">${pr.roleName}</div>
-                                        <div class="col-3"><form action="/admin/deleteProjectRole/${pr.id}" method="get"><button type="submit" class="btn btn-link btn-sm" title="Delete Project Role"><i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i></button></form></div>
+                                        <div class="col-3">
+                                            <form action="/admin/deleteProjectRole" method="post">
+                                                <input type="hidden" name="projectRole" value="${pr.id}"/>
+                                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                                                <button type="submit" class="btn btn-link btn-sm" title="Delete Project Role">
+                                                    <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                         </div>
                                     </li>
                                 </#list>
                             </ul>
+
                         </div>
 
                     </div>

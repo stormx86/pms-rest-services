@@ -3,6 +3,8 @@ package pl.kozhanov.ProjectManagementSystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,10 +40,14 @@ public class ProjectController {
     public String showProjects(
             @RequestParam(defaultValue = "") String projectManagerFilter,
             @RequestParam(defaultValue = "") String createdByFilter,
-            Map<String, Object> model,
-            Pageable pageable){
+            Map<String, Object> model, @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC, value = 15) Pageable pageable){
         Page<ProjectViewProjection> projectsPage = projectService.findProjects(projectManagerFilter, createdByFilter, pageable);
+        //getting sort property and next sort direction
+        Sort sort = projectService.sortManage(pageable.getSort());
+
         model.put("page", projectsPage);
+        model.put("sort", (sort.isSorted())?sort.iterator().next().getProperty():"");
+        model.put("nextSortDirection", (sort.isSorted())?sort.iterator().next().getDirection():"ASC");
         model.put("loggedUser", userService.getCurrentLoggedInUsername());
         model.put("url", "/projects");
         return "projects";
@@ -85,7 +91,7 @@ public class ProjectController {
 
     @PostMapping("/add")
     @ResponseBody
-     public Map<String, String> addProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result, Model model) {
+     public Map<String, String> addProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result) {
         if(result.hasErrors())
         {
             Map<String, String> errorsMap = ControllerUtils.getErrors(result);
@@ -111,7 +117,7 @@ public class ProjectController {
 
     @PostMapping("/save")
     @ResponseBody
-    public Map<String, String> saveProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result, Model model) {
+    public Map<String, String> saveProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result) {
         if(result.hasErrors())
         {
             Map<String, String> errorsMap = ControllerUtils.getErrors(result);
