@@ -106,7 +106,7 @@
                             <p class="card-text" id="saveResponse"></p>
                             <#if resetResponseMessage??>
                                 <div class="alert alert-${resetResponseMessage}" role="alert">
-                                    Password successfully reseted!
+                                    Password successfully reset!
                                 </div>
                             </#if>
                         </div>

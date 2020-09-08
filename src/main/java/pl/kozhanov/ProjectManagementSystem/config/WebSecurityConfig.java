@@ -17,6 +17,7 @@ import pl.kozhanov.ProjectManagementSystem.service.UserService;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    public static final String LOGIN = "/login";
     @Autowired
     private UserService userService;
 
@@ -32,18 +33,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/login", "/css/**").permitAll()
+                .antMatchers(LOGIN, "/css/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/login")
+                .loginPage(LOGIN)
                 .defaultSuccessUrl("/projects", true)
                 .permitAll()
                 .and()
                 .rememberMe()
                 .and()
                 .logout()
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl(LOGIN)
                 .permitAll();
     }
 

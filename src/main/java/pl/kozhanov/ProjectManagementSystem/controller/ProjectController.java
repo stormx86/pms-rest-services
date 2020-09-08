@@ -24,6 +24,8 @@ import java.util.Map;
 @RequestMapping("/projects")
 public class ProjectController {
 
+    public static final String LOGGED_USER = "loggedUser";
+    public static final String ERROR_ID = "ErrorId";
     @Autowired
     ProjectService projectService;
 
@@ -48,7 +50,7 @@ public class ProjectController {
         model.put("page", projectsPage);
         model.put("sort", (sort.isSorted())?sort.iterator().next().getProperty():"");
         model.put("nextSortDirection", (sort.isSorted())?sort.iterator().next().getDirection():"ASC");
-        model.put("loggedUser", userService.getCurrentLoggedInUsername());
+        model.put(LOGGED_USER, userService.getCurrentLoggedInUsername());
         model.put("url", "/projects");
         return "projects";
     }
@@ -57,7 +59,7 @@ public class ProjectController {
     public String openProject(@PathVariable Integer projectId, Model model){
             model.addAttribute("project", projectService.findById(projectId));
             model.addAttribute("statuses", projectStatusService.findAllStatuses());
-            model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
+            model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
             // if currently logged user is not a member of the project --> Access denied
             String currentLoggedInUser = userService.getCurrentLoggedInUsername();
             if(!userService.hasProjectAuthorities(currentLoggedInUser, projectId)) return "project403";
@@ -68,7 +70,7 @@ public class ProjectController {
     public String editProject(@PathVariable Integer projectId, Model model) {
         model.addAttribute("project", projectService.findById(projectId));
         model.addAttribute("existingRoles", projectRoleService.findAllRoleNames());
-        model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
+        model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
         return "editProject";
     }
 
@@ -76,7 +78,7 @@ public class ProjectController {
     @GetMapping("/newProject")
     public String newProject(Map<String, Object> model) {
         model.put("existingRoles", projectRoleService.findAllRoleNames());
-        model.put("loggedUser", userService.getCurrentLoggedInUsername());
+        model.put(LOGGED_USER, userService.getCurrentLoggedInUsername());
         return "newProject";
     }
 
@@ -95,9 +97,9 @@ public class ProjectController {
         if(result.hasErrors())
         {
             Map<String, String> errorsMap = ControllerUtils.getErrors(result);
-            if(RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST) !=null)
+            if(RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST) !=null)
                 {
-                 for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST))
+                 for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST))
                      {
                          errorsMap.put(str, "No such username in the data base");
                      }
@@ -105,7 +107,7 @@ public class ProjectController {
             return errorsMap;
         }
         else {
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             map.put("OK", "OK");
             projectService.addProject(pmw.getTitle(), pmw.getDescription(), pmw.getProjectManager(), pmw.getRoles(), pmw.getExistingUsers());
             return map;
@@ -121,9 +123,9 @@ public class ProjectController {
         if(result.hasErrors())
         {
             Map<String, String> errorsMap = ControllerUtils.getErrors(result);
-            if(RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST) !=null)
+            if(RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST) !=null)
             {
-                for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute("ErrorId", RequestAttributes.SCOPE_REQUEST))
+                for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST))
                 {
                     errorsMap.put(str, "No such username in the data base");
                 }
@@ -131,7 +133,7 @@ public class ProjectController {
             return errorsMap;
         }
         else {
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             map.put("OK", "OK");
             projectService.saveProject(pmw.getProjectId(), pmw.getTitle(), pmw.getDescription(), pmw.getProjectManager(), pmw.getRoles(), pmw.getExistingUsers());
             return map;
