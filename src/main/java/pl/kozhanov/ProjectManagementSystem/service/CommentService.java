@@ -11,7 +11,7 @@ public class CommentService {
     @Autowired
     CommentRepo commentRepo;
 
-    public void delComment(Integer commentId){
+    public void delComment(Integer commentId) {
         Comment cmt = commentRepo.getById(commentId);
         commentRepo.delete(cmt);
     }

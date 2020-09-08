@@ -31,34 +31,42 @@ public class ProjectService {
     @Autowired
     CommentRepo commentRepo;
 
-
-    public List<Project> findAll(){
-        return  projectRepo.findAll();
+    public ProjectService(UserService userService, ProjectStatusService projectStatusService, ProjectRoleService projectRoleService, ProjectRepo projectRepo) {
+        this.userService = userService;
+        this.projectStatusService= projectStatusService;
+        this.projectRoleService = projectRoleService;
+        this.projectRepo = projectRepo;
     }
 
-    public ProjectViewProjection findById(Integer id){return projectRepo.findById(id);}
+    public List<Project> findAll() {
+        return projectRepo.findAll();
+    }
 
+    public ProjectViewProjection findById(Integer id) {
+        return projectRepo.findById(id);
+    }
 
-    public void addProject(String title, String description, String projectManager, List<String> roles, List<String> existingUsers){
+    public boolean addProject(String title, String description, String projectManager, List<String> roles, List<String> existingUsers) {
         Project newProject = new Project(Instant.now(), title, description, userService.getCurrentLoggedInUsername(), projectManager, projectStatusService.findByStatusName("Waiting"));
-        if(roles != null) {
+        if (roles != null) {
             Set<UserProjectRoleLink> uprlSet = new HashSet<>();
-            for (int i = 0; i < roles.size(); i++) {
+            for (int i = 0; i < roles.size(); i++) { //lambda or foreach
                 uprlSet.add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), newProject, projectRoleService.findByRoleName(roles.get(i))));
             }
             newProject.setUserProjectRoleLink(uprlSet);
         }
         projectRepo.saveAndFlush(newProject);
+        return true;
     }
 
 
-    public void saveProject(Integer id, String title, String description, String projectManager, List<String> roles, List<String> existingUsers){
+    public void saveProject(Integer id, String title, String description, String projectManager, List<String> roles, List<String> existingUsers) {
         Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
         project.setProjectManager(projectManager);
         project.getUserProjectRoleLink().clear();
-        if(roles != null) {
+        if (roles != null) {
             for (int i = 0; i < roles.size(); i++) {
                 project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), project, projectRoleService.findByRoleName(roles.get(i))));
             }
@@ -66,19 +74,19 @@ public class ProjectService {
         projectRepo.saveAndFlush(project);
     }
 
-    public void deleteProject(Integer projectId){
+    public void deleteProject(Integer projectId) {
         Project project = projectRepo.getById(projectId);
         projectRepo.delete(project);
     }
 
-    public void changeProjectStatus(Integer id, String status){
+    public void changeProjectStatus(Integer id, String status) {
         Project project = projectRepo.getById(id);
         project.setStatus(projectStatusService.findByStatusName(status));
         projectRepo.save(project);
     }
 
 
-    public void addNewComment(Integer id, String commentText){
+    public void addNewComment(Integer id, String commentText) {
         Project project = projectRepo.getById(id);
         String currentLoggedInUser = userService.getCurrentLoggedInUsername();
         project.getComments().add(new Comment(Instant.now(), commentText, project, userService.findByUsername(currentLoggedInUser)));
@@ -86,60 +94,64 @@ public class ProjectService {
     }
 
 
-    public Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter, Pageable pageable){
+    public Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter, Pageable pageable) {
         //if no one filter selected
-        if(projectManagerFilter.equals("") && createdByFilter.equals(""))
-        {
-            if(userService.isAdmin())
-                {
-                    return projectRepo.getAll(pageable);
-                }
-            else {
-                return projectRepo.findAllWhereUserIsMember(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), pageable);
-            }
+        if (projectManagerFilter.equals("") && createdByFilter.equals("")) {
+            return noFiltersSelectedReturn(pageable);
         }
         //if filter by ProjectManager selected
-        else if (!projectManagerFilter.equals("") && createdByFilter.equals(""))
-        {
-            if(userService.isAdmin())
-            {
-                return projectRepo.findAllByProjectManager(projectManagerFilter, pageable);
-            }
-            else {
-                return projectRepo.findAllWhereUserIsMemberByProjectManager(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, pageable);
-            }
+        else if (!projectManagerFilter.equals("") && createdByFilter.equals("")) {
+            return projectManagerFilterRerurn(projectManagerFilter, pageable);
         }
         //if filter by Creator selected
-        else if(projectManagerFilter.equals("") && !createdByFilter.equals(""))
-        {
-            if(userService.isAdmin())
-            {
-                return projectRepo.findAllByCreator(createdByFilter, pageable);
-            }
-            else {
-                return projectRepo.findAllWhereUserIsMemberByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), createdByFilter, pageable);
-            }
+        else if (projectManagerFilter.equals("") && !createdByFilter.equals("")) {
+            return creatorFilterSelectedReturn(createdByFilter, pageable);
         }
         //if filter by ProjectManager & Creator selected | if(!projectManagerFilter.equals("") && !createdByFilter.equals(""))
-        else
-        {
-            if(userService.isAdmin())
-            {
-                return projectRepo.findAllByProjectManagerAndCreator(projectManagerFilter, createdByFilter, pageable);
-            }
-            else {
-                return projectRepo.findAllWhereUserIsMemberByProjectManagerAndByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, createdByFilter, pageable);
-            }
+        else {
+            return creatorAndPmFilterSelectedReturn(projectManagerFilter, createdByFilter, pageable);
         }
 
     }
 
-    public Sort sortManage(Sort sort){
-        if(sort.isSorted()) {
+    private Page<ProjectViewProjection> creatorAndPmFilterSelectedReturn(String projectManagerFilter, String createdByFilter, Pageable pageable) {
+        if (userService.isAdmin()) {
+            return projectRepo.findAllByProjectManagerAndCreator(projectManagerFilter, createdByFilter, pageable);
+        } else {
+            return projectRepo.findAllWhereUserIsMemberByProjectManagerAndByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, createdByFilter, pageable);
+        }
+    }
+
+    private Page<ProjectViewProjection> creatorFilterSelectedReturn(String createdByFilter, Pageable pageable) {
+        if (userService.isAdmin()) {
+            return projectRepo.findAllByCreator(createdByFilter, pageable);
+        } else {
+            return projectRepo.findAllWhereUserIsMemberByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), createdByFilter, pageable);
+        }
+    }
+
+    private Page<ProjectViewProjection> projectManagerFilterRerurn(String projectManagerFilter, Pageable pageable) {
+        if (userService.isAdmin()) {
+            return projectRepo.findAllByProjectManager(projectManagerFilter, pageable);
+        } else {
+            return projectRepo.findAllWhereUserIsMemberByProjectManager(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, pageable);
+        }
+    }
+
+    private Page<ProjectViewProjection> noFiltersSelectedReturn(Pageable pageable) {
+        if (userService.isAdmin()) {
+            return projectRepo.getAll(pageable);
+        } else {
+            return projectRepo.findAllWhereUserIsMember(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), pageable);
+        }
+    }
+
+    public Sort sortManage(Sort sort) {
+        if (sort.isSorted()) {
             if (sort.iterator().next().getDirection().isAscending()) {
-                sort=sort.descending();
+                sort = sort.descending();
             } else {
-                sort=sort.ascending();
+                sort = sort.ascending();
             }
         }
         return sort;

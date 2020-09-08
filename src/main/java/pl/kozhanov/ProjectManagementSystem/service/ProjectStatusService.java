@@ -10,8 +10,13 @@ import java.util.List;
 
 @Service
 public class ProjectStatusService {
+
     @Autowired
     ProjectStatusRepo projectStatusRepo;
+
+    public ProjectStatusService(ProjectStatusRepo projectStatusRepo) {
+        this.projectStatusRepo = projectStatusRepo;
+    }
 
     public ProjectStatus findByStatusName(String statusName)
     {
