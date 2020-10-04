@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href ="../../css/main.css">
+
     <title>Edit project</title>
 
 
@@ -28,9 +29,9 @@
     <#--Set selected role in <select> - ADVANCED VERSION-->
     <script>
         $(document).ready(function () {
-        $("select.form-control").each(function() {
-            var specifiedID = this.id;
-            $(this).val(specifiedID);})
+            $("select.form-control").each(function() {
+                var specifiedID = this.id;
+                $(this).val(specifiedID);})
         });
     </script>
 
@@ -105,15 +106,15 @@
     <script>
         $(document).ready(function () {
             $("#add_role").click(function () {
-               var markup = $("<tr><td><select class=\"form-control\" name=\"role\">\n" +
+                var markup = $("<tr><td><select class=\"form-control\" name=\"role\">\n" +
                     "                                <#list existingRoles as er>\n" +
                     "                                    <option value=\"${er}\">${er}</option>\n" +
                     "                                </#list>\n" +
                     "                            </select></td><td><input class=\"form-control\" type=\"text\"  name=\"user_member\" ></td><td>\n" +
-                   "                            <button onclick=\"deleteRole()\" class=\"btn btn-link btn-sm\">\n" +
-                   "                                <i style=\"color: dimgray\" class=\"fa fa-trash\" aria-hidden=\"true\"></i>\n" +
-                   "                            </button>\n" +
-                   "                        </td></tr>");
+                    "                            <button onclick=\"deleteRole()\" class=\"btn btn-link btn-sm\">\n" +
+                    "                                <i style=\"color: dimgray\" class=\"fa fa-trash\" aria-hidden=\"true\"></i>\n" +
+                    "                            </button>\n" +
+                    "                        </td></tr>");
                 tableBody = $("#tb_roles tbody");
                 $(".form-control", markup).autocomplete(autocompl_opt);
                 tableBody.append(markup);
@@ -122,7 +123,6 @@
             });
         });
     </script>
-
 
 </head>
 <body>
@@ -215,5 +215,6 @@
 <#--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
 </body>
 </html>
