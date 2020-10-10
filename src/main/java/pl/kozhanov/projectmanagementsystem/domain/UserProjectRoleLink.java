@@ -4,7 +4,6 @@ import javax.persistence.*;
 
 @Entity
 public class UserProjectRoleLink {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -17,11 +16,9 @@ public class UserProjectRoleLink {
     @JoinColumn(name = "project_id")
     private Project project;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectroles_id")
     private ProjectRole projectRole;
-
 
     public UserProjectRoleLink() {
     }

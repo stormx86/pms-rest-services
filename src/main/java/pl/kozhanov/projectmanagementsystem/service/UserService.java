@@ -20,18 +20,19 @@ import java.util.stream.IntStream;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
+    private ProjectService projectService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    ProjectService projectService;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
     public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void setProjectService(ProjectService projectService) {
+        this.projectService = projectService;
     }
 
     public List<User> findAll() {
@@ -46,13 +47,12 @@ public class UserService implements UserDetailsService {
         return userRepo.findByUsername(username);
     }
 
-
     //usernames for autocomplete
     public List<String> findByUsernameLike(String term) {
         return userRepo.findByUsernameLike(term);
     }
 
-    public List<String> findAllUsersOnProject(Integer projectId) {
+    private List<String> findAllUsersOnProject(Integer projectId) {
         return userRepo.findAllUsersOnProject(projectId);
     }
 
@@ -70,11 +70,11 @@ public class UserService implements UserDetailsService {
         return auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
     }
 
-    public boolean isCreator(String currentLoggedInUser, Integer projectId) {
+    private boolean isCreator(String currentLoggedInUser, Integer projectId) {
         return projectService.findById(projectId).getCreator().equals(currentLoggedInUser);
     }
 
-    public boolean isProjectManager(String currentLoggedInUser, Integer projectId) {
+    private boolean isProjectManager(String currentLoggedInUser, Integer projectId) {
         return projectService.findById(projectId).getProjectManager().equals(currentLoggedInUser);
     }
 
@@ -113,7 +113,6 @@ public class UserService implements UserDetailsService {
         userRepo.delete(user);
     }
 
-
     public void changeUserPassword(String username, String password) {
         User user = userRepo.findByUsername(username);
         user.setPassword(passwordEncoder.encode(password));
@@ -124,7 +123,6 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getUsername()));
         userRepo.save(user);
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String username) {

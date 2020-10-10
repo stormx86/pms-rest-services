@@ -11,14 +11,14 @@ import java.util.List;
 @Service
 public class ProjectStatusService {
 
-    @Autowired
-    ProjectStatusRepo projectStatusRepo;
+    private ProjectStatusRepo projectStatusRepo;
 
+    @Autowired
     public ProjectStatusService(ProjectStatusRepo projectStatusRepo) {
         this.projectStatusRepo = projectStatusRepo;
     }
 
-    public ProjectStatus findByStatusName(String statusName) {
+    ProjectStatus findByStatusName(String statusName) {
         return projectStatusRepo.findByStatusName(statusName);
     }
 
@@ -27,5 +27,4 @@ public class ProjectStatusService {
         projectStatusRepo.findAll().forEach(status -> statuses.add(status.getStatusName()));
         return statuses;
     }
-
 }

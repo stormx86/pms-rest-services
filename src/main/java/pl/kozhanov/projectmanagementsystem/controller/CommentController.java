@@ -14,17 +14,21 @@ import pl.kozhanov.projectmanagementsystem.service.ProjectService;
 @RequestMapping("/comments")
 public class CommentController {
 
+    private ProjectService projectService;
+    private CommentService commentService;
+
     @Autowired
-    ProjectService projectService;
-    @Autowired
-    CommentService commentService;
+    public CommentController(ProjectService projectService, CommentService commentService) {
+        this.projectService = projectService;
+        this.commentService = commentService;
+    }
 
     @PostMapping("/addNew")
     @ResponseBody
     public String addNewComment(
             @RequestParam("id") Integer projectId,
             @RequestParam("commentText") String commentText) {
-        if(commentText.equals("")) return "Empty comment";
+        if (commentText.equals("")) return "Empty comment";
         else {
             projectService.addNewComment(projectId, commentText);
             return "Comment added!";
@@ -35,9 +39,8 @@ public class CommentController {
     @PostMapping("/delComment")
     @ResponseBody
     public String delComment(
-            @RequestParam("commentId") Integer commentId) {
+            @RequestParam("commentId") Long commentId) {
         commentService.delComment(commentId);
         return "Comment deleted!";
     }
-
 }

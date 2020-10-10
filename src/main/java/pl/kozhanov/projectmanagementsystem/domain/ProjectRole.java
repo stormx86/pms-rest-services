@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Entity
 public class ProjectRole {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;

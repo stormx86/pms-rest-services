@@ -22,15 +22,19 @@ import java.util.Map;
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
-    public static final String LOGGED_USER = "loggedUser";
-    public static final String PROJECT_ROLES = "projectRoles";
-    public static final String ADMIN_PANEL_PROJECT_ROLES_MANAGE = "adminPanelProjectRolesManage";
-    public static final String SUCCESS = "success";
-    @Autowired
-    UserService userService;
+    private static final String LOGGED_USER = "loggedUser";
+    private static final String PROJECT_ROLES = "projectRoles";
+    private static final String ADMIN_PANEL_PROJECT_ROLES_MANAGE = "adminPanelProjectRolesManage";
+    private static final String SUCCESS = "success";
+
+    private UserService userService;
+    private ProjectRoleService projectRoleService;
 
     @Autowired
-    ProjectRoleService projectRoleService;
+    public AdminController(UserService userService, ProjectRoleService projectRoleService) {
+        this.userService = userService;
+        this.projectRoleService = projectRoleService;
+    }
 
     @GetMapping("/adminPanelUserManage")
     public String adminPanelUserManage(Model model, @PageableDefault(value = 10) Pageable pageable) {
@@ -49,7 +53,8 @@ public class AdminController {
 
 
     @PostMapping("/addUser")
-    public String addUser(@Valid User user, BindingResult result, Model model, @PageableDefault(value = 10) Pageable pageable) {
+    public String addUser(@Valid User user, BindingResult result, Model model,
+                          @PageableDefault(value = 10) Pageable pageable) {
         if (result.hasErrors()) {
             Map<String, String> errorsMap = ControllerUtils.getErrors(result);
             model.mergeAttributes(errorsMap);
@@ -109,7 +114,6 @@ public class AdminController {
         return ADMIN_PANEL_PROJECT_ROLES_MANAGE;
     }
 
-
     @PostMapping("/deleteProjectRole")
     public String deleteProjectRole(@RequestParam ProjectRole projectRole, Model model) {
         projectRoleService.deleteProjectRole(projectRole);
@@ -118,6 +122,4 @@ public class AdminController {
         model.addAttribute("responseDeleted", SUCCESS);
         return ADMIN_PANEL_PROJECT_ROLES_MANAGE;
     }
-
-
 }

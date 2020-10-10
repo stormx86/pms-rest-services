@@ -8,14 +8,14 @@ import pl.kozhanov.projectmanagementsystem.repos.CommentRepo;
 @Service
 public class CommentService {
 
-    @Autowired
-    CommentRepo commentRepo;
+    private CommentRepo commentRepo;
 
+    @Autowired
     public CommentService(CommentRepo commentRepo) {
         this.commentRepo = commentRepo;
     }
 
-    public void delComment(Integer commentId) {
+    public void delComment(Long commentId) {
         Comment cmt = commentRepo.getById(commentId);
         commentRepo.delete(cmt);
     }

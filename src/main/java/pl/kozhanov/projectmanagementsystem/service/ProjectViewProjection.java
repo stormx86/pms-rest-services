@@ -15,17 +15,11 @@ import java.util.stream.Collectors;
 public interface ProjectViewProjection {
 
     Integer getId();
-
     Instant getCreatedAt();
-
     String getTitle();
-
     String getDescription();
-
     ProjectStatus getStatus();
-
     String getCreator();
-
     String getProjectManager();
 
     Set<UserProjectRoleLink> getUserProjectRoleLink();
@@ -48,6 +42,4 @@ public interface ProjectViewProjection {
                 .sorted(Comparator.comparing(Comment::getCreatedAt).reversed())
                 .collect(Collectors.toList());
     }
-
-
 }

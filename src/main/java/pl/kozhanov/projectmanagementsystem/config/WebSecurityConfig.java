@@ -17,12 +17,18 @@ import pl.kozhanov.projectmanagementsystem.service.UserService;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String LOGIN = "/login";
-    @Autowired
+    private static final String LOGIN = "/login";
     private UserService userService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Bean
     public PasswordEncoder getPasswordEncoder(){

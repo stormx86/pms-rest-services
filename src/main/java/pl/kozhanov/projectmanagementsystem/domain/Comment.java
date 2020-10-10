@@ -9,10 +9,9 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @Table(name = "comments")
 public class Comment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
     private Instant createdAt;
     private String commentText;
     private String createdAtView;
@@ -33,14 +32,15 @@ public class Comment {
         this.commentText = commentText;
         this.project = project;
         this.user = user;
-        this.createdAtView = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").format(ZonedDateTime.ofInstant(createdAt, ZoneId.systemDefault()));
+        this.createdAtView = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
+                .format(ZonedDateTime.ofInstant(createdAt, ZoneId.systemDefault()));
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,5 +79,4 @@ public class Comment {
     public String getCreatedAtView() { return createdAtView; }
 
     public void setCreatedAtView() {this.createdAtView = createdAtView;}
-
 }

@@ -7,7 +7,6 @@ import java.util.Set;
 
 @Entity
 public class Project {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -28,7 +27,8 @@ public class Project {
     private List<Comment> comments;
 
 
-    public Project(Instant createdAt, String title, String description, String creator, String projectManager, ProjectStatus status) {
+    public Project(Instant createdAt, String title, String description, String creator, String projectManager,
+                   ProjectStatus status) {
         this.title = title;
         this.description = description;
         this.status = status;

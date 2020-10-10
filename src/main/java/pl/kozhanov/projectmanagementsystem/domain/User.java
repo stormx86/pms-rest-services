@@ -13,7 +13,6 @@ import java.util.Set;
 @Entity
 @Table(name = "usr")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -22,7 +21,9 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private boolean active;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval= true)
@@ -47,8 +48,6 @@ public class User implements UserDetails {
     public String getUsername() {
         return username;
     }
-
-
 
     public void setUsername(String username) {
         this.username = username;

@@ -24,46 +24,49 @@ import java.util.Map;
 @RequestMapping("/projects")
 public class ProjectController {
 
-    public static final String LOGGED_USER = "loggedUser";
-    public static final String ERROR_ID = "ErrorId";
-    @Autowired
-    ProjectService projectService;
+    private static final String LOGGED_USER = "loggedUser";
+    private static final String ERROR_ID = "ErrorId";
+    private ProjectService projectService;
+    private UserService userService;
+    private ProjectStatusService projectStatusService;
+    private ProjectRoleService projectRoleService;
 
     @Autowired
-    UserService userService;
-
-    @Autowired
-    ProjectStatusService projectStatusService;
-
-    @Autowired
-    ProjectRoleService projectRoleService;
+    public ProjectController(ProjectService projectService, UserService userService,
+                             ProjectStatusService projectStatusService, ProjectRoleService projectRoleService) {
+        this.projectService = projectService;
+        this.userService = userService;
+        this.projectStatusService = projectStatusService;
+        this.projectRoleService = projectRoleService;
+    }
 
     @GetMapping
     public String showProjects(
             @RequestParam(defaultValue = "") String projectManagerFilter,
             @RequestParam(defaultValue = "") String createdByFilter,
-            Map<String, Object> model, @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC, value = 15) Pageable pageable){
-        Page<ProjectViewProjection> projectsPage = projectService.findProjects(projectManagerFilter, createdByFilter, pageable);
+            Map<String, Object> model,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC, value = 15) Pageable pageable) {
+        Page<ProjectViewProjection> projectsPage = projectService.findProjects(
+                projectManagerFilter, createdByFilter, pageable);
         //getting sort property and next sort direction
         Sort sort = projectService.sortManage(pageable.getSort());
-
         model.put("page", projectsPage);
-        model.put("sort", (sort.isSorted())?sort.iterator().next().getProperty():"");
-        model.put("nextSortDirection", (sort.isSorted())?sort.iterator().next().getDirection():"ASC");
+        model.put("sort", (sort.isSorted()) ? sort.iterator().next().getProperty() : "");
+        model.put("nextSortDirection", (sort.isSorted()) ? sort.iterator().next().getDirection() : "ASC");
         model.put(LOGGED_USER, userService.getCurrentLoggedInUsername());
         model.put("url", "/projects");
         return "projects";
     }
 
     @GetMapping("{projectId}")
-    public String openProject(@PathVariable Integer projectId, Model model){
-            model.addAttribute("project", projectService.findById(projectId));
-            model.addAttribute("statuses", projectStatusService.findAllStatuses());
-            model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
-            // if currently logged user is not a member of the project --> Access denied
-            String currentLoggedInUser = userService.getCurrentLoggedInUsername();
-            if(!userService.hasProjectAuthorities(currentLoggedInUser, projectId)) return "project403";
-            else return "openProject";
+    public String openProject(@PathVariable Integer projectId, Model model) {
+        model.addAttribute("project", projectService.findById(projectId));
+        model.addAttribute("statuses", projectStatusService.findAllStatuses());
+        model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
+        // if currently logged user is not a member of the project --> Access denied
+        String currentLoggedInUser = userService.getCurrentLoggedInUsername();
+        if (!userService.hasProjectAuthorities(currentLoggedInUser, projectId)) return "project403";
+        else return "openProject";
     }
 
     @GetMapping("edit/{projectId}")
@@ -74,7 +77,6 @@ public class ProjectController {
         return "editProject";
     }
 
-
     @GetMapping("/newProject")
     public String newProject(Map<String, Object> model) {
         model.put("existingRoles", projectRoleService.findAllRoleNames());
@@ -82,69 +84,58 @@ public class ProjectController {
         return "newProject";
     }
 
-
     //usernames for autocomplete
     @GetMapping("/getUserNames")
     @ResponseBody
-    public List<String> getUserNames(@RequestParam(value = "term", required = false, defaultValue = "")String term) {
+    public List<String> getUserNames(@RequestParam(value = "term", required = false, defaultValue = "") String term) {
         return userService.findByUsernameLike(term);
     }
 
-
     @PostMapping("/add")
     @ResponseBody
-     public Map<String, String> addProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result) {
-        if(result.hasErrors())
-        {
+    public Map<String, String> addProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result) {
+        if (result.hasErrors()) {
             Map<String, String> errorsMap = ControllerUtils.getErrors(result);
-            if(RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST) !=null)
-                {
-                 for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST))
-                     {
-                         errorsMap.put(str, "No such username in the data base");
-                     }
-                }
-            return errorsMap;
-        }
-        else {
-            Map<String, String> map = new HashMap<>();
-            map.put("OK", "OK");
-            projectService.addProject(pmw.getTitle(), pmw.getDescription(), pmw.getProjectManager(), pmw.getRoles(), pmw.getExistingUsers());
-            return map;
-        }
-    }
-
-
-
-
-    @PostMapping("/save")
-    @ResponseBody
-    public Map<String, String> saveProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result) {
-        if(result.hasErrors())
-        {
-            Map<String, String> errorsMap = ControllerUtils.getErrors(result);
-            if(RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST) !=null)
-            {
-                for(String str: (List<String>)RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST))
-                {
+            if (RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST) != null) {
+                for (String str : (List<String>) RequestContextHolder.getRequestAttributes()
+                        .getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST)) {
                     errorsMap.put(str, "No such username in the data base");
                 }
             }
             return errorsMap;
-        }
-        else {
+        } else {
             Map<String, String> map = new HashMap<>();
             map.put("OK", "OK");
-            projectService.saveProject(pmw.getProjectId(), pmw.getTitle(), pmw.getDescription(), pmw.getProjectManager(), pmw.getRoles(), pmw.getExistingUsers());
+            projectService.addProject(pmw.getTitle(), pmw.getDescription(), pmw.getProjectManager(), pmw.getRoles(),
+                    pmw.getExistingUsers());
             return map;
         }
     }
 
-
+    @PostMapping("/save")
+    @ResponseBody
+    public Map<String, String> saveProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errorsMap = ControllerUtils.getErrors(result);
+            if (RequestContextHolder.getRequestAttributes().getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST) != null) {
+                for (String str : (List<String>) RequestContextHolder.getRequestAttributes()
+                        .getAttribute(ERROR_ID, RequestAttributes.SCOPE_REQUEST)) {
+                    errorsMap.put(str, "No such username in the data base");
+                }
+            }
+            return errorsMap;
+        } else {
+            Map<String, String> map = new HashMap<>();
+            map.put("OK", "OK");
+            projectService.saveProject(pmw.getProjectId(), pmw.getTitle(), pmw.getDescription(),
+                    pmw.getProjectManager(), pmw.getRoles(), pmw.getExistingUsers());
+            return map;
+        }
+    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("delete/{projectId}")
-    public String deleteProject(@PathVariable Integer projectId){
+    public String deleteProject(@PathVariable Integer projectId) {
         projectService.deleteProject(projectId);
         return "redirect:/projects";
     }
@@ -157,9 +148,6 @@ public class ProjectController {
         projectService.changeProjectStatus(projectId, status);
         return "Status changed!";
     }
-
-
-
 }
 
 

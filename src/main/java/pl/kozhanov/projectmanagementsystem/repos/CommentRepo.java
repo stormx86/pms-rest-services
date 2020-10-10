@@ -5,5 +5,5 @@ import pl.kozhanov.projectmanagementsystem.domain.Comment;
 
 public interface CommentRepo extends JpaRepository<Comment, Long> {
 
-    Comment getById(Integer id);
+    Comment getById(Long id);
 }

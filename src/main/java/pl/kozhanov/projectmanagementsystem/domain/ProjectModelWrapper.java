@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 public class ProjectModelWrapper {
-
     private Integer projectId;
     @NotBlank(message = "Title field can't be empty")
     private String title;

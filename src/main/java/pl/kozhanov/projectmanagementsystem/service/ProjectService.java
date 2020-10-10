@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import pl.kozhanov.projectmanagementsystem.domain.Comment;
 import pl.kozhanov.projectmanagementsystem.domain.Project;
 import pl.kozhanov.projectmanagementsystem.domain.UserProjectRoleLink;
-import pl.kozhanov.projectmanagementsystem.repos.CommentRepo;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectRepo;
 
 import java.time.Instant;
@@ -20,19 +19,14 @@ import java.util.stream.IntStream;
 @Service
 public class ProjectService {
 
-    @Autowired
-    ProjectRepo projectRepo;
-    @Autowired
-    UserService userService;
-    @Autowired
-    ProjectRoleService projectRoleService;
-    @Autowired
-    ProjectStatusService projectStatusService;
+    private UserService userService;
+    private ProjectRoleService projectRoleService;
+    private ProjectStatusService projectStatusService;
+    private ProjectRepo projectRepo;
 
     @Autowired
-    CommentRepo commentRepo;
-
-    public ProjectService(UserService userService, ProjectStatusService projectStatusService, ProjectRoleService projectRoleService, ProjectRepo projectRepo) {
+    public ProjectService(UserService userService, ProjectStatusService projectStatusService,
+                          ProjectRoleService projectRoleService, ProjectRepo projectRepo) {
         this.userService = userService;
         this.projectStatusService = projectStatusService;
         this.projectRoleService = projectRoleService;
@@ -47,26 +41,33 @@ public class ProjectService {
         return projectRepo.findById(id);
     }
 
-    public boolean addProject(String title, String description, String projectManager, List<String> roles, List<String> existingUsers) {
-        Project newProject = new Project(Instant.now(), title, description, userService.getCurrentLoggedInUsername(), projectManager, projectStatusService.findByStatusName("Waiting"));
+    public boolean addProject(String title, String description, String projectManager, List<String> roles,
+                              List<String> existingUsers) {
+        Project newProject = new Project(Instant.now(), title, description, userService.getCurrentLoggedInUsername(),
+                projectManager, projectStatusService.findByStatusName("Waiting"));
         if (roles != null) {
             Set<UserProjectRoleLink> uprlSet = new HashSet<>();
-            IntStream.range(0, roles.size()).forEach(i -> uprlSet.add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), newProject, projectRoleService.findByRoleName(roles.get(i)))));
+            IntStream.range(0, roles.size()).forEach(i -> uprlSet.add(new UserProjectRoleLink(
+                    userService.findByUsername(existingUsers.get(i)), newProject,
+                    projectRoleService.findByRoleName(roles.get(i)))));
             newProject.setUserProjectRoleLink(uprlSet);
         }
         projectRepo.saveAndFlush(newProject);
         return true;
     }
 
-
-    public void saveProject(Integer id, String title, String description, String projectManager, List<String> roles, List<String> existingUsers) {
+    public void saveProject(Integer id, String title, String description, String projectManager, List<String> roles,
+                            List<String> existingUsers) {
         Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
         project.setProjectManager(projectManager);
         project.getUserProjectRoleLink().clear();
         if (roles != null) {
-            IntStream.range(0, roles.size()).forEach(i -> project.getUserProjectRoleLink().add(new UserProjectRoleLink(userService.findByUsername(existingUsers.get(i)), project, projectRoleService.findByRoleName(roles.get(i)))));
+            IntStream.range(0, roles.size()).forEach(i -> project.getUserProjectRoleLink().add(
+                    new UserProjectRoleLink(
+                            userService.findByUsername(existingUsers.get(i)), project,
+                            projectRoleService.findByRoleName(roles.get(i)))));
         }
         projectRepo.saveAndFlush(project);
     }
@@ -82,16 +83,16 @@ public class ProjectService {
         projectRepo.save(project);
     }
 
-
     public void addNewComment(Integer id, String commentText) {
         Project project = projectRepo.getById(id);
         String currentLoggedInUser = userService.getCurrentLoggedInUsername();
-        project.getComments().add(new Comment(Instant.now(), commentText, project, userService.findByUsername(currentLoggedInUser)));
+        project.getComments().add(new Comment(Instant.now(), commentText, project,
+                userService.findByUsername(currentLoggedInUser)));
         projectRepo.saveAndFlush(project);
     }
 
-
-    public Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter, Pageable pageable) {
+    public Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter,
+                                                    Pageable pageable) {
         //if no one filter selected
 
         if (projectManagerFilter.equals("") && createdByFilter.equals("")) {
@@ -112,11 +113,14 @@ public class ProjectService {
 
     }
 
-    private Page<ProjectViewProjection> creatorAndPmFilterSelectedReturn(String projectManagerFilter, String createdByFilter, Pageable pageable) {
+    private Page<ProjectViewProjection> creatorAndPmFilterSelectedReturn(String projectManagerFilter,
+                                                                         String createdByFilter, Pageable pageable) {
         if (userService.isAdmin()) {
             return projectRepo.findAllByProjectManagerAndCreator(projectManagerFilter, createdByFilter, pageable);
         } else {
-            return projectRepo.findAllWhereUserIsMemberByProjectManagerAndByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, createdByFilter, pageable);
+            return projectRepo.findAllWhereUserIsMemberByProjectManagerAndByCreator(userService.findByUsername(
+                    userService.getCurrentLoggedInUsername()).getId(),
+                    userService.getCurrentLoggedInUsername(), projectManagerFilter, createdByFilter, pageable);
         }
     }
 
@@ -124,7 +128,9 @@ public class ProjectService {
         if (userService.isAdmin()) {
             return projectRepo.findAllByCreator(createdByFilter, pageable);
         } else {
-            return projectRepo.findAllWhereUserIsMemberByCreator(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), createdByFilter, pageable);
+            return projectRepo.findAllWhereUserIsMemberByCreator(userService.findByUsername(
+                    userService.getCurrentLoggedInUsername()).getId(),
+                    userService.getCurrentLoggedInUsername(), createdByFilter, pageable);
         }
     }
 
@@ -132,7 +138,9 @@ public class ProjectService {
         if (userService.isAdmin()) {
             return projectRepo.findAllByProjectManager(projectManagerFilter, pageable);
         } else {
-            return projectRepo.findAllWhereUserIsMemberByProjectManager(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), projectManagerFilter, pageable);
+            return projectRepo.findAllWhereUserIsMemberByProjectManager(userService.findByUsername(
+                    userService.getCurrentLoggedInUsername()).getId(),
+                    userService.getCurrentLoggedInUsername(), projectManagerFilter, pageable);
         }
     }
 
@@ -140,7 +148,9 @@ public class ProjectService {
         if (userService.isAdmin()) {
             return projectRepo.getAll(pageable);
         } else {
-            return projectRepo.findAllWhereUserIsMember(userService.findByUsername(userService.getCurrentLoggedInUsername()).getId(), userService.getCurrentLoggedInUsername(), pageable);
+            return projectRepo.findAllWhereUserIsMember(userService.findByUsername(
+                    userService.getCurrentLoggedInUsername()).getId(),
+                    userService.getCurrentLoggedInUsername(), pageable);
         }
     }
 
@@ -154,7 +164,5 @@ public class ProjectService {
         }
         return sort;
     }
-
-
 }
 

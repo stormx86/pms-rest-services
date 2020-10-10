@@ -11,14 +11,14 @@ import java.util.List;
 @Service
 public class ProjectRoleService {
 
-    @Autowired
-    ProjectRoleRepo projectRoleRepo;
+    private ProjectRoleRepo projectRoleRepo;
 
+    @Autowired
     public ProjectRoleService(ProjectRoleRepo projectRoleRepo) {
         this.projectRoleRepo = projectRoleRepo;
     }
 
-    public ProjectRole findByRoleName(String rolename) {
+    ProjectRole findByRoleName(String rolename) {
         return projectRoleRepo.findByRoleName(rolename);
     }
 
