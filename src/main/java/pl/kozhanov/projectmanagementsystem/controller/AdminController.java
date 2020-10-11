@@ -36,15 +36,15 @@ public class AdminController {
         this.projectRoleService = projectRoleService;
     }
 
-    @GetMapping("/adminPanelUserManage")
+    @GetMapping("/users")
     public String adminPanelUserManage(Model model, @PageableDefault(value = 10) Pageable pageable) {
         model.addAttribute("page", userService.findAllByOrderByUsernameAsc(pageable));
-        model.addAttribute("url", "/admin/adminPanelUserManage");
+        model.addAttribute("url", "/admin/users");
         model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
         return "adminPanelUserManage";
     }
 
-    @GetMapping("/adminPanelProjectRolesManage")
+    @GetMapping("/roles")
     public String adminPanelProjectRolesManage(Model model) {
         model.addAttribute(PROJECT_ROLES, projectRoleService.findAllByOrderByRoleName());
         model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
@@ -52,7 +52,7 @@ public class AdminController {
     }
 
 
-    @PostMapping("/addUser")
+    @PostMapping("/users/add")
     public String addUser(@Valid User user, BindingResult result, Model model,
                           @PageableDefault(value = 10) Pageable pageable) {
         if (result.hasErrors()) {
@@ -63,12 +63,12 @@ public class AdminController {
             model.addAttribute("responseMessage", SUCCESS);
         }
         model.addAttribute("page", userService.findAllByOrderByUsernameAsc(pageable));
-        model.addAttribute("url", "/admin/adminPanelUserManage");
+        model.addAttribute("url", "/admin/users");
         model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
         return "adminPanelUserManage";
     }
 
-    @GetMapping("editUser/{user}")
+    @GetMapping("/users/{user}")
     public String editUser(@PathVariable User user, Model model) {
         model.addAttribute("user", user);
         model.addAttribute("globalRoles", GlobalRole.values());
@@ -76,7 +76,7 @@ public class AdminController {
         return "editUser";
     }
 
-    @PostMapping("/saveUser")
+    @PutMapping("/users/{user}")
     @ResponseBody
     public String saveUser(@RequestParam("id") Integer userId,
                            @RequestParam("newUsername") String newUsername,
@@ -84,13 +84,13 @@ public class AdminController {
         return userService.saveUser(userId, newUsername, roles);
     }
 
-    @GetMapping("deleteUser/{user}")
+    @DeleteMapping("/users/{user}")
     public String deleteUser(@PathVariable User user) {
         userService.deleteUser(user);
-        return "redirect:/admin/adminPanelUserManage";
+        return "redirect:/admin/users";
     }
 
-    @GetMapping("resetUserPassword/{user}")
+    @PutMapping("users/{user}/reset-password")
     public String resetUserPassword(@PathVariable User user, Model model) {
         userService.resetUserPassword(user);
         model.addAttribute("user", user);
@@ -100,7 +100,7 @@ public class AdminController {
         return "editUser";
     }
 
-    @PostMapping("/addNewProjectRole")
+    @PostMapping("/roles/add")
     public String addNewProjectRole(@Valid ProjectRole projectRole, BindingResult result, Model model) {
         if (result.hasErrors()) {
             Map<String, String> errorsMap = ControllerUtils.getErrors(result);
@@ -114,9 +114,9 @@ public class AdminController {
         return ADMIN_PANEL_PROJECT_ROLES_MANAGE;
     }
 
-    @PostMapping("/deleteProjectRole")
-    public String deleteProjectRole(@RequestParam ProjectRole projectRole, Model model) {
-        projectRoleService.deleteProjectRole(projectRole);
+    @DeleteMapping("/roles/{role}")
+    public String deleteProjectRole(@PathVariable ProjectRole role, Model model) {
+        projectRoleService.deleteProjectRole(role);
         model.addAttribute(PROJECT_ROLES, projectRoleService.findAllByOrderByRoleName());
         model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
         model.addAttribute("responseDeleted", SUCCESS);

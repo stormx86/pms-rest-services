@@ -12,7 +12,7 @@
     <title>Project Management System - Admin Panel - Manage Users - Edit User</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href ="../../css/main.css">
+    <link rel="stylesheet" type="text/css" href ="../../../css/main.css">
 
 
     <script>
@@ -34,8 +34,8 @@
             })
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
-                url: "/admin/saveUser",
-                type: "POST",
+                url: "/admin/users/${user.id}",
+                type: "PUT",
                 data: {id: ${user.id}, newUsername: newUsername, roles: roles},
                 success: function(response){
                     if(response=="Successfully saved!") {
@@ -62,7 +62,7 @@
     <@m.menu/>
     <br>
     <form>
-        <input class="btn btn-primary btn-sm" type="button" value="<--Back" onclick="window.location.replace('http://localhost:8080/admin/adminPanelUserManage')">
+        <input class="btn btn-primary btn-sm" type="button" value="<--Back" onclick="window.location.replace('http://localhost:8080/admin/users')">
     </form>
     <br><br>
     <div class="row">
@@ -85,12 +85,16 @@
                         <div class="col-3">
                             <button onclick="saveUser()" class="btn btn-success btn-sm">Save User</button>
                             <br><br>
-                            <form action="/admin/resetUserPassword/${user.id}" method="get">
+                            <form action="/admin/users/${user.id}/reset-password" method="post">
                                 <input type="submit" class="btn btn-primary btn-sm" value="Reset password"/>
+                                <input type="hidden" name="_method" value="PUT"/>
+                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                             </form>
                             <br><br>
-                            <form action="/admin/deleteUser/${user.id}" method="get">
+                            <form action="/admin/users/${user.id}" method="post">
                                 <input type="submit" class="btn btn-danger btn-sm" value="Delete User"/>
+                                <input type="hidden" name="_method" value="DELETE"/>
+                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                             </form>
                         </div>
 

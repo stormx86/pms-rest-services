@@ -32,7 +32,7 @@
                             <a class="nav-link active" href="#"><b>Manage Users</b></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/admin/adminPanelProjectRolesManage">Manage Project Roles</a>
+                            <a class="nav-link" href="/admin/roles">Manage Project Roles</a>
                         </li>
                     </ul>
                 </div>
@@ -40,7 +40,7 @@
                     <h5 class="card-title">Create new user</h5>
                     <div class="row">
                         <div class="col-2">
-                            <form id="addUser" action="/admin/addUser" method="post">
+                            <form id="addUser" action="/admin/users/add" method="post">
                             <input class="form-control ${(username??)?string('is-invalid', '')}" type="text" name="username" placeholder="Enter username">
                                 <#if username??>
                                     <div class="invalid-feedback">
@@ -67,7 +67,7 @@
                         <div class="col-2">
                             <ul class="list-group" id="userList">
                                 <#list page.content as user>
-                                <li class="list-group-item"><a href="/admin/editUser/${user.id}">${user.username}</a></li>
+                                <li class="list-group-item"><a href="/admin/users/${user.id}">${user.username}</a></li>
                                 </#list>
                             </ul>
                         </div>

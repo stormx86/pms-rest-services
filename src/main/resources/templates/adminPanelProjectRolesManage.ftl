@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-    <link rel="stylesheet" type="text/css" href ="../css/main.css">
+    <link rel="stylesheet" type="text/css" href ="../../css/main.css">
 
 </head>
 <body>
@@ -31,7 +31,7 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
-                            <a class="nav-link" href="/admin/adminPanelUserManage">Manage Users</a>
+                            <a class="nav-link" href="/admin/users">Manage Users</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="#"><b>Manage Project Roles</b></a>
@@ -42,7 +42,7 @@
                     <h5 class="card-title">Create new Project Role</h5>
                     <div class="row">
                         <div class="col-2">
-                            <form id="addProjectRole" action="/admin/addNewProjectRole" method="post">
+                            <form id="addProjectRole" action="/admin/roles/add" method="post">
                                 <input class="form-control ${(roleName??)?string('is-invalid', '')}" type="text" name="roleName" placeholder="Enter Project Role">
                                 <#if roleName??>
                                     <div class="invalid-feedback">
@@ -78,9 +78,9 @@
                                         <div class="row">
                                         <div class="col">${pr.roleName}</div>
                                         <div class="col-3">
-                                            <form action="/admin/deleteProjectRole" method="post">
-                                                <input type="hidden" name="projectRole" value="${pr.id}"/>
+                                            <form action="/admin/roles/${pr.id}" method="post">
                                                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                                                <input type="hidden" name="_method" value="DELETE"/>
                                                 <button type="submit" class="btn btn-link btn-sm" title="Delete Project Role">
                                                     <i style="color: dimgray" class="fa fa-trash" aria-hidden="true"></i>
                                                 </button>

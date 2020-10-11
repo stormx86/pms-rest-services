@@ -12,7 +12,7 @@
     <title>Project Management System - User Profile</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href ="../css/main.css">
+    <link rel="stylesheet" type="text/css" href ="../../css/main.css">
 
 
 </head>
@@ -32,7 +32,9 @@
                     <div class="row">
                         <div class="col-8">
                     <h6>Change password:</h6>
-                            <form action="/changeUserPassword" method="post">
+                            <form action="/users/${loggedUser}/change-password" method="post">
+                                <input type="hidden" name="_method" value="PUT"/>
+                                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                     <input class="form-control ${(passwordError??)?string('is-invalid', '')}" type="password" id="password" name="password" placeholder="Enter new password">
                                 <#if passwordError??>
                                 <div class="invalid-feedback">

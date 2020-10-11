@@ -3,10 +3,7 @@ package pl.kozhanov.projectmanagementsystem.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import pl.kozhanov.projectmanagementsystem.service.CommentService;
 import pl.kozhanov.projectmanagementsystem.service.ProjectService;
 
@@ -23,7 +20,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/addNew")
+    @PostMapping("/add")
     @ResponseBody
     public String addNewComment(
             @RequestParam("id") Integer projectId,
@@ -36,11 +33,10 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/delComment")
+    @DeleteMapping("/{comment}")
     @ResponseBody
-    public String delComment(
-            @RequestParam("commentId") Long commentId) {
-        commentService.delComment(commentId);
+    public String delComment(@PathVariable Long comment) {
+        commentService.delComment(comment);
         return "Comment deleted!";
     }
 }

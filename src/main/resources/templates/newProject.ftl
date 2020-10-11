@@ -15,7 +15,7 @@
     <title>Create new project</title>
 
     <script>
-        var autocompl_opt = {source: "/projects/getUserNames", minLength: 2};
+        var autocompl_opt = {source: "/projects/get-usernames", minLength: 2};
         $(document).ready(function autocompleteReady () {
             $(".form-control").each(function () {
                 $(this).autocomplete(autocompl_opt);

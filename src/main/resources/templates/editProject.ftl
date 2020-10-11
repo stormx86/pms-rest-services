@@ -18,7 +18,7 @@
 
 
     <script>
-        var autocompl_opt = {source: "/projects/getUserNames", minLength: 2};
+        var autocompl_opt = {source: "/projects/get-usernames", minLength: 2};
         $(document).ready(function autocompleteReady () {
             $(".form-control").each(function () {
                 $(this).autocomplete(autocompl_opt);
@@ -70,8 +70,8 @@
             var projectManager = $('input[name="projectManager"]').val();
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
-                url: "/projects/save",
-                type: "POST",
+                url: "/projects/"+${project.getId()},
+                type: "PUT",
                 data: {projectId: ${project.getId()}, title: title, description: description, projectManager: projectManager, roles: roles, users: users, existingUsers: existingUsers},
                 traditional : true,
                 success: function(myresponse){

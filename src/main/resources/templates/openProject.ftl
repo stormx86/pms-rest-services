@@ -28,8 +28,8 @@
             var status = $("#sta option:selected").val();
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
-                url: "/projects/changeStatus",
-                type: "POST",
+                url: "/projects/" + id + "/change-status",
+                type: "PUT",
                 data: {id: id, status: status},
                 success: function(response){
                     $("#status_success").empty();
@@ -52,7 +52,7 @@
             var commentText =$('textarea[name="newComment"]').val();
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
-                url: "/comments/addNew",
+                url: "/comments/add",
                 type: "POST",
                 data: {id: ${project.getId()}, commentText: commentText},
                 success: function(response){
@@ -75,8 +75,8 @@
         function deleteComment(comment_id) {
             $.ajax({
                 headers: {"X-CSRF-TOKEN": $("input[name='_csrf']").val()},
-                url: "/comments/delComment",
-                type: "POST",
+                url: "/comments/"+comment_id,
+                type: "DELETE",
                 data: {commentId: comment_id},
                 success: function(response){
                     if(response == "Comment deleted!")
@@ -95,12 +95,14 @@
     <br>
     <div class="row">
         <div class="col">
-            <form action="/projects/edit/${project.id}" method="get">
+            <form action="/projects/${project.id}/edit" method="get">
                 <input class="btn btn-primary btn-sm" type="submit" value="Edit project"/>
             </form>
             <@security.authorize access="hasAnyAuthority('ADMIN')">
-            <form action="/projects/delete/${project.id}" method="get">
+            <form action="/projects/${project.id}" method="post">
                 <input class="btn btn-danger btn-sm" type="submit" value="Delete project"/>
+                <input type="hidden" name="_method" value="DELETE"/>
+                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
             </form>
             </@security.authorize>
         </div>

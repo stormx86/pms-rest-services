@@ -5,10 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import pl.kozhanov.projectmanagementsystem.service.UserService;
 
 @Controller
@@ -22,7 +19,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("user/{username}")
+    @GetMapping("users/{username}")
     public String userProfile(@PathVariable String username, Model model) {
         if (userService.getCurrentLoggedInUsername().equals(username)) {
             model.addAttribute("loggedUser", userService.getCurrentLoggedInUsername());
@@ -33,7 +30,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/changeUserPassword")
+    @PutMapping("/users/{username}/change-password")
     public String changeUserPassword(
             @RequestParam("username") String username,
             @RequestParam("password") String password,

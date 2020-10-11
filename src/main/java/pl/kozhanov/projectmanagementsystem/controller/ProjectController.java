@@ -58,26 +58,26 @@ public class ProjectController {
         return "projects";
     }
 
-    @GetMapping("{projectId}")
-    public String openProject(@PathVariable Integer projectId, Model model) {
-        model.addAttribute("project", projectService.findById(projectId));
+    @GetMapping("{project}")
+    public String openProject(@PathVariable Integer project, Model model) {
+        model.addAttribute("project", projectService.findById(project));
         model.addAttribute("statuses", projectStatusService.findAllStatuses());
         model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
         // if currently logged user is not a member of the project --> Access denied
         String currentLoggedInUser = userService.getCurrentLoggedInUsername();
-        if (!userService.hasProjectAuthorities(currentLoggedInUser, projectId)) return "project403";
+        if (!userService.hasProjectAuthorities(currentLoggedInUser, project)) return "project403";
         else return "openProject";
     }
 
-    @GetMapping("edit/{projectId}")
-    public String editProject(@PathVariable Integer projectId, Model model) {
-        model.addAttribute("project", projectService.findById(projectId));
+    @GetMapping("/{project}/edit")
+    public String editProject(@PathVariable Integer project, Model model) {
+        model.addAttribute("project", projectService.findById(project));
         model.addAttribute("existingRoles", projectRoleService.findAllRoleNames());
         model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
         return "editProject";
     }
 
-    @GetMapping("/newProject")
+    @GetMapping("/new")
     public String newProject(Map<String, Object> model) {
         model.put("existingRoles", projectRoleService.findAllRoleNames());
         model.put(LOGGED_USER, userService.getCurrentLoggedInUsername());
@@ -85,7 +85,7 @@ public class ProjectController {
     }
 
     //usernames for autocomplete
-    @GetMapping("/getUserNames")
+    @GetMapping("/get-usernames")
     @ResponseBody
     public List<String> getUserNames(@RequestParam(value = "term", required = false, defaultValue = "") String term) {
         return userService.findByUsernameLike(term);
@@ -112,7 +112,7 @@ public class ProjectController {
         }
     }
 
-    @PostMapping("/save")
+    @PutMapping("/{project}")
     @ResponseBody
     public Map<String, String> saveProject(@Valid @ModelAttribute ProjectModelWrapper pmw, BindingResult result) {
         if (result.hasErrors()) {
@@ -134,13 +134,13 @@ public class ProjectController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("delete/{projectId}")
-    public String deleteProject(@PathVariable Integer projectId) {
-        projectService.deleteProject(projectId);
+    @DeleteMapping("/{project}")
+    public String deleteProject(@PathVariable Integer project) {
+        projectService.deleteProject(project);
         return "redirect:/projects";
     }
 
-    @PostMapping("changeStatus")
+    @PutMapping("/{project}/change-status")
     @ResponseBody
     public String changeProjectStatus(
             @RequestParam("id") Integer projectId,
