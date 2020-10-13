@@ -13,12 +13,10 @@ public class NewProjectRoleValidator implements ConstraintValidator<NewProjectRo
 
     @Override
     public void initialize(NewProjectRoleConstraint constraintAnnotation) {
-
     }
 
     @Override
     public boolean isValid(String roleName, ConstraintValidatorContext constraintValidatorContext) {
-        if(projectRoleService.findAllRoleNames().contains(roleName)) return false;
-        return true;
+        return !projectRoleService.findAllRoleNames().contains(roleName);
     }
 }

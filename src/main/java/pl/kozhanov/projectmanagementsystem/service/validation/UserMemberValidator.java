@@ -18,13 +18,11 @@ public class UserMemberValidator implements ConstraintValidator<UserMemberConstr
 
     @Override
     public void initialize(UserMemberConstraint constraintAnnotation) {
-
     }
 
     @Override
     public boolean isValid(List<String> userMembers, ConstraintValidatorContext ctx) {
         if (userMembers == null) return true;
-
         //get all usernames from DB
         List<String> allUsers = new ArrayList<>();
         for(User user: userService.findAll())
@@ -42,8 +40,6 @@ public class UserMemberValidator implements ConstraintValidator<UserMemberConstr
             }
 
         if(allUsers.containsAll(userMembersNames)) return true;
-
-
         else
         {
             RequestContextHolder.getRequestAttributes().setAttribute("ErrorId", userMembersInputsId, RequestAttributes.SCOPE_REQUEST);

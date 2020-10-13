@@ -23,7 +23,6 @@ import java.util.Map;
 @Controller
 @RequestMapping("/projects")
 public class ProjectController {
-
     private static final String LOGGED_USER = "loggedUser";
     private static final String ERROR_ID = "ErrorId";
     private ProjectService projectService;

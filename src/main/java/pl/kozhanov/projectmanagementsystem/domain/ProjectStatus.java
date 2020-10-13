@@ -6,10 +6,12 @@ import java.util.Set;
 @Entity
 @Table(name = "project_status")
 public class ProjectStatus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String statusName;
+
     @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
     private Set<Project> projects;
 

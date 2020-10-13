@@ -18,7 +18,6 @@ import java.util.stream.IntStream;
 
 @Service
 public class ProjectService {
-
     private UserService userService;
     private ProjectRoleService projectRoleService;
     private ProjectStatusService projectStatusService;
@@ -110,7 +109,6 @@ public class ProjectService {
         else {
             return creatorAndPmFilterSelectedReturn(projectManagerFilter, createdByFilter, pageable);
         }
-
     }
 
     private Page<ProjectViewProjection> creatorAndPmFilterSelectedReturn(String projectManagerFilter,

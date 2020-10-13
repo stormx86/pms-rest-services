@@ -31,7 +31,4 @@ public interface UserRepo extends JpaRepository<User, Integer> {
                     " JOIN project as p on p.id = uprl.project_id " +
                     " WHERE p.id=:projectId")
     List<String> findAllUsersOnProject(@Param("projectId") Integer projectId);
-
-
-
 }

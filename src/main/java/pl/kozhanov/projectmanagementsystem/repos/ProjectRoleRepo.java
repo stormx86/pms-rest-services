@@ -10,5 +10,4 @@ public interface ProjectRoleRepo extends JpaRepository<ProjectRole, Integer> {
     ProjectRole findByRoleName(String rolename);
 
     List<ProjectRole> findAllByOrderByRoleName();
-
 }

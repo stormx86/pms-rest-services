@@ -12,10 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 class ProjectRoleServiceTest {
-
-    ProjectRoleRepo projectRoleRepo = mock(ProjectRoleRepo.class);
-
-    ProjectRoleService projectRoleService = new ProjectRoleService(projectRoleRepo);
+    private ProjectRoleRepo projectRoleRepo = mock(ProjectRoleRepo.class);
+    private ProjectRoleService projectRoleService = new ProjectRoleService(projectRoleRepo);
 
     @Test
     void findAllRoleNamesTest() {
@@ -28,5 +26,4 @@ class ProjectRoleServiceTest {
         projectRoleService.findAllRoleNames();
         assertEquals("Test role", projectRoleService.findAllRoleNames().get(0));
     }
-
 }

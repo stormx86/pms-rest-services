@@ -13,12 +13,10 @@ public class NewUserValidator implements ConstraintValidator<NewUserConstraint, 
 
     @Override
     public void initialize(NewUserConstraint constraintAnnotation) {
-
     }
 
     @Override
     public boolean isValid(String username, ConstraintValidatorContext constraintValidatorContext) {
-        if(userService.findAll().contains(userService.findByUsername(username))) return false;
-        else return true;
+        return !userService.findAll().contains(userService.findByUsername(username));
     }
 }

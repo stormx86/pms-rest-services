@@ -11,7 +11,6 @@ import pl.kozhanov.projectmanagementsystem.service.UserService;
 @Controller
 @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 public class UserController {
-
     private UserService userService;
 
     @Autowired

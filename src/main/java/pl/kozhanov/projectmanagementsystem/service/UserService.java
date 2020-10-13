@@ -19,7 +19,6 @@ import java.util.stream.IntStream;
 
 @Service
 public class UserService implements UserDetailsService {
-
     private UserRepo userRepo;
     private ProjectService projectService;
     private PasswordEncoder passwordEncoder;

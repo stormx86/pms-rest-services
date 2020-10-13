@@ -8,14 +8,18 @@ import java.util.List;
 
 public class ProjectModelWrapper {
     private Integer projectId;
+
     @NotBlank(message = "Title field can't be empty")
     private String title;
+
     @NotBlank(message = "Description field can't be empty")
     private String description;
+
     @ProjectManagerConstraint
     @NotBlank(message = "Project Manager field can't be empty")
     private String projectManager;
     private List<String> roles;
+
     @UserMemberConstraint
     private List<String> users;
     private List<String> existingUsers;

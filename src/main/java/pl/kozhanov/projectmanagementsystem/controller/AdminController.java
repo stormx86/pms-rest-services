@@ -21,12 +21,10 @@ import java.util.Map;
 @RequestMapping("/admin")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
-
     private static final String LOGGED_USER = "loggedUser";
     private static final String PROJECT_ROLES = "projectRoles";
     private static final String ADMIN_PANEL_PROJECT_ROLES_MANAGE = "adminPanelProjectRolesManage";
     private static final String SUCCESS = "success";
-
     private UserService userService;
     private ProjectRoleService projectRoleService;
 
@@ -50,7 +48,6 @@ public class AdminController {
         model.addAttribute(LOGGED_USER, userService.getCurrentLoggedInUsername());
         return ADMIN_PANEL_PROJECT_ROLES_MANAGE;
     }
-
 
     @PostMapping("/users/add")
     public String addUser(@Valid User user, BindingResult result, Model model,

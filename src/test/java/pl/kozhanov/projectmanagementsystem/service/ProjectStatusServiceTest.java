@@ -12,10 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class ProjectStatusServiceTest {
-
-    ProjectStatusRepo projectStatusRepo = mock(ProjectStatusRepo.class);
-
-    ProjectStatusService projectStatusService = new ProjectStatusService(projectStatusRepo);
+    private ProjectStatusRepo projectStatusRepo = mock(ProjectStatusRepo.class);
+    private ProjectStatusService projectStatusService = new ProjectStatusService(projectStatusRepo);
 
     @Test
     void findAllStatusesTest() {
@@ -27,8 +25,5 @@ class ProjectStatusServiceTest {
         projectStatusService.findAllStatuses();
         assertNotNull(projectStatusService.findAllStatuses());
         assertEquals("New", projectStatusService.findAllStatuses().get(0));
-
     }
-
-
 }

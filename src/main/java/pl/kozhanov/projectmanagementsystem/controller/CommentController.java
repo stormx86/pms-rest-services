@@ -10,7 +10,6 @@ import pl.kozhanov.projectmanagementsystem.service.ProjectService;
 @Controller
 @RequestMapping("/comments")
 public class CommentController {
-
     private ProjectService projectService;
     private CommentService commentService;
 

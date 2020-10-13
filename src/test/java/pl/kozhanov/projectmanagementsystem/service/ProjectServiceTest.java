@@ -17,17 +17,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 
 class ProjectServiceTest {
-
-    UserService userService = mock(UserService.class);
-
-    ProjectStatusService projectStatusService = mock(ProjectStatusService.class);
-
-    ProjectRoleService projectRoleService = mock(ProjectRoleService.class);
-
-    ProjectRepo projectRepo = mock(ProjectRepo.class);
-
-    ProjectService projectService = new ProjectService(userService, projectStatusService, projectRoleService, projectRepo);
-
+    private UserService userService = mock(UserService.class);
+    private ProjectStatusService projectStatusService = mock(ProjectStatusService.class);
+    private ProjectRoleService projectRoleService = mock(ProjectRoleService.class);
+    private ProjectRepo projectRepo = mock(ProjectRepo.class);
+    private ProjectService projectService = new ProjectService(userService, projectStatusService, projectRoleService, projectRepo);
 
     @Test
     void addProjectTest() {
@@ -84,6 +78,4 @@ class ProjectServiceTest {
         projectService.addNewComment(id, commentText);
         assertEquals("new comment", project.getComments().get(0).getCommentText());
     }
-
-
 }

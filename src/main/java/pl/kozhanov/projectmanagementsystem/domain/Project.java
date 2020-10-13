@@ -7,6 +7,7 @@ import java.util.Set;
 
 @Entity
 public class Project {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -25,7 +26,6 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = {CascadeType.ALL})
     private List<Comment> comments;
-
 
     public Project(Instant createdAt, String title, String description, String creator, String projectManager,
                    ProjectStatus status) {
@@ -76,8 +76,7 @@ public class Project {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt;
-    }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
     public String getCreator() {
         return creator;

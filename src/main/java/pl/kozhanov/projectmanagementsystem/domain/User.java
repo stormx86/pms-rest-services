@@ -13,9 +13,11 @@ import java.util.Set;
 @Entity
 @Table(name = "usr")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
     @NotBlank(message = "Username field can't be empty")
     @NewUserConstraint
     private String username;

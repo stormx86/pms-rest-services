@@ -10,7 +10,6 @@ import java.util.List;
 
 @Service
 public class ProjectStatusService {
-
     private ProjectStatusRepo projectStatusRepo;
 
     @Autowired

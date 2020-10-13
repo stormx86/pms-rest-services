@@ -7,7 +7,6 @@ import pl.kozhanov.projectmanagementsystem.repos.CommentRepo;
 
 @Service
 public class CommentService {
-
     private CommentRepo commentRepo;
 
     @Autowired

@@ -15,7 +15,6 @@ public class ProjectManagerValidator implements ConstraintValidator<ProjectManag
 
     @Override
     public void initialize(ProjectManagerConstraint constraintAnnotation) {
-
     }
 
     @Override
@@ -25,7 +24,6 @@ public class ProjectManagerValidator implements ConstraintValidator<ProjectManag
         List<String> allUsers = new ArrayList<>();
         userService.findAll().forEach(user-> allUsers.add(user.getUsername()));
 
-        if(allUsers.contains(projectManager)) return true;
-        else return false;
+        return allUsers.contains(projectManager);
     }
 }

@@ -15,11 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class UserServiceTest {
-
     private PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-
     private UserRepo userRepo = mock(UserRepo.class);
-
     private UserService userService = new UserService(userRepo, passwordEncoder);
 
     @Test
@@ -50,7 +47,6 @@ class UserServiceTest {
         assertEquals("Nick", user.getUsername());
         assertTrue(CoreMatchers.is(user.getGlobalRoles()).matches(Collections.singleton(GlobalRole.ADMIN)));
     }
-
 
     @Test
     void deleteUser_shouldCallDbOnce() {
