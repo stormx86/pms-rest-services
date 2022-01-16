@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.kozhanov.projectmanagementsystem.domain.GlobalRole;
 import pl.kozhanov.projectmanagementsystem.domain.User;
 import pl.kozhanov.projectmanagementsystem.repos.UserRepo;
+import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;

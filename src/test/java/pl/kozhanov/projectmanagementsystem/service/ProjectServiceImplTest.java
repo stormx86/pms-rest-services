@@ -6,6 +6,8 @@ import pl.kozhanov.projectmanagementsystem.domain.Project;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectStatus;
 import pl.kozhanov.projectmanagementsystem.domain.User;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectRepo;
+import pl.kozhanov.projectmanagementsystem.service.impl.ProjectServiceImpl;
+import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,12 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 
-class ProjectServiceTest {
+class ProjectServiceImplTest {
     private UserService userService = mock(UserService.class);
     private ProjectStatusService projectStatusService = mock(ProjectStatusService.class);
     private ProjectRoleService projectRoleService = mock(ProjectRoleService.class);
     private ProjectRepo projectRepo = mock(ProjectRepo.class);
-    private ProjectService projectService = new ProjectService(userService, projectStatusService, projectRoleService, projectRepo);
+
+    private ProjectServiceImpl projectService = new ProjectServiceImpl(userService, projectStatusService, projectRoleService, projectRepo);
 
     @Test
     void addProjectTest() {

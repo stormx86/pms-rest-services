@@ -1,41 +1,18 @@
 package pl.kozhanov.projectmanagementsystem.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectRole;
-import pl.kozhanov.projectmanagementsystem.repos.ProjectRoleRepo;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class ProjectRoleService {
-    private ProjectRoleRepo projectRoleRepo;
+public interface ProjectRoleService {
 
-    @Autowired
-    public ProjectRoleService(ProjectRoleRepo projectRoleRepo) {
-        this.projectRoleRepo = projectRoleRepo;
-    }
+    ProjectRole findByRoleName(String rolename);
 
-    ProjectRole findByRoleName(String rolename) {
-        return projectRoleRepo.findByRoleName(rolename);
-    }
+    List<ProjectRole> findAllByOrderByRoleName();
 
-    public List<ProjectRole> findAllByOrderByRoleName() {
-        return projectRoleRepo.findAllByOrderByRoleName();
-    }
+    List<String> findAllRoleNames();
 
-    public List<String> findAllRoleNames() {
-        List<String> existingRoles = new ArrayList<>();
-        projectRoleRepo.findAll().forEach(role -> existingRoles.add(role.getRoleName()));
-        return existingRoles;
-    }
+    void addNewProjectRole(ProjectRole projectRole);
 
-    public void addNewProjectRole(ProjectRole projectRole) {
-        projectRoleRepo.save(projectRole);
-    }
-
-    public void deleteProjectRole(ProjectRole projectRole) {
-        projectRoleRepo.delete(projectRole);
-    }
+    void deleteProjectRole(ProjectRole projectRole);
 }

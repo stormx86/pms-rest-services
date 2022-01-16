@@ -1,6 +1,5 @@
 package pl.kozhanov.projectmanagementsystem.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,7 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectModelWrapper;
-import pl.kozhanov.projectmanagementsystem.service.*;
+import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
+import pl.kozhanov.projectmanagementsystem.service.ProjectService;
+import pl.kozhanov.projectmanagementsystem.service.ProjectStatusService;
+import pl.kozhanov.projectmanagementsystem.service.ProjectViewProjection;
+import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -23,16 +26,19 @@ import java.util.Map;
 @Controller
 @RequestMapping("/projects")
 public class ProjectController {
+
     private static final String LOGGED_USER = "loggedUser";
     private static final String ERROR_ID = "ErrorId";
-    private ProjectService projectService;
-    private UserService userService;
-    private ProjectStatusService projectStatusService;
-    private ProjectRoleService projectRoleService;
 
-    @Autowired
-    public ProjectController(ProjectService projectService, UserService userService,
-                             ProjectStatusService projectStatusService, ProjectRoleService projectRoleService) {
+    private final ProjectService projectService;
+    private final UserService userService;
+    private final ProjectStatusService projectStatusService;
+    private final ProjectRoleService projectRoleService;
+
+    public ProjectController(final ProjectService projectService,
+                             final UserService userService,
+                             final ProjectStatusService projectStatusService,
+                             final ProjectRoleService projectRoleService) {
         this.projectService = projectService;
         this.userService = userService;
         this.projectStatusService = projectStatusService;

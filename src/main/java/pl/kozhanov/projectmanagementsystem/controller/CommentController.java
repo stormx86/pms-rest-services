@@ -1,6 +1,5 @@
 package pl.kozhanov.projectmanagementsystem.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +9,11 @@ import pl.kozhanov.projectmanagementsystem.service.ProjectService;
 @Controller
 @RequestMapping("/comments")
 public class CommentController {
-    private ProjectService projectService;
-    private CommentService commentService;
 
-    @Autowired
-    public CommentController(ProjectService projectService, CommentService commentService) {
+    private final ProjectService projectService;
+    private final CommentService commentService;
+
+    public CommentController(final ProjectService projectService, final CommentService commentService) {
         this.projectService = projectService;
         this.commentService = commentService;
     }
@@ -35,7 +34,7 @@ public class CommentController {
     @DeleteMapping("/{comment}")
     @ResponseBody
     public String delComment(@PathVariable Long comment) {
-        commentService.delComment(comment);
+        commentService.deleteComment(comment);
         return "Comment deleted!";
     }
 }

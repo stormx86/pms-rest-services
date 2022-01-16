@@ -2,6 +2,7 @@ package pl.kozhanov.projectmanagementsystem.service.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
+import pl.kozhanov.projectmanagementsystem.service.impl.ProjectRoleServiceImpl;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

@@ -1,6 +1,5 @@
 package pl.kozhanov.projectmanagementsystem.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,7 +11,7 @@ import pl.kozhanov.projectmanagementsystem.domain.GlobalRole;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectRole;
 import pl.kozhanov.projectmanagementsystem.domain.User;
 import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
-import pl.kozhanov.projectmanagementsystem.service.UserService;
+import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -21,15 +20,16 @@ import java.util.Map;
 @RequestMapping("/admin")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
+
     private static final String LOGGED_USER = "loggedUser";
     private static final String PROJECT_ROLES = "projectRoles";
     private static final String ADMIN_PANEL_PROJECT_ROLES_MANAGE = "adminPanelProjectRolesManage";
     private static final String SUCCESS = "success";
-    private UserService userService;
-    private ProjectRoleService projectRoleService;
 
-    @Autowired
-    public AdminController(UserService userService, ProjectRoleService projectRoleService) {
+    private final UserService userService;
+    private final ProjectRoleService projectRoleService;
+
+    public AdminController(final UserService userService, final ProjectRoleService projectRoleService) {
         this.userService = userService;
         this.projectRoleService = projectRoleService;
     }

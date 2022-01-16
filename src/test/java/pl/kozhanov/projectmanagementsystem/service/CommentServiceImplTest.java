@@ -4,20 +4,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import pl.kozhanov.projectmanagementsystem.domain.Comment;
 import pl.kozhanov.projectmanagementsystem.repos.CommentRepo;
+import pl.kozhanov.projectmanagementsystem.service.impl.CommentServiceImpl;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 
-class CommentServiceTest {
+class CommentServiceImplTest {
     private CommentRepo commentRepo = mock(CommentRepo.class);
-    private CommentService commentService = new CommentService(commentRepo);
+    private CommentServiceImpl commentService = new CommentServiceImpl(commentRepo);
 
     @Test
     void delCommentTest() {
         long id = 1;
         Comment comment = new Comment();
         Mockito.when(commentRepo.getById(anyLong())).thenReturn(comment);
-        commentService.delComment(id);
+        commentService.deleteComment(id);
         Mockito.verify(commentRepo, Mockito.times(1)).delete(comment);
     }
 }

@@ -1,4 +1,4 @@
-package pl.kozhanov.projectmanagementsystem.service;
+package pl.kozhanov.projectmanagementsystem.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import pl.kozhanov.projectmanagementsystem.domain.GlobalRole;
 import pl.kozhanov.projectmanagementsystem.domain.User;
 import pl.kozhanov.projectmanagementsystem.repos.UserRepo;
+import pl.kozhanov.projectmanagementsystem.service.ProjectService;
 
 import java.util.Collections;
 import java.util.List;
