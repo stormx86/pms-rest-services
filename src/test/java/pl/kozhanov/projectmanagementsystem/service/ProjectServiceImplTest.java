@@ -7,7 +7,7 @@ import pl.kozhanov.projectmanagementsystem.domain.ProjectStatus;
 import pl.kozhanov.projectmanagementsystem.domain.User;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectRepo;
 import pl.kozhanov.projectmanagementsystem.service.impl.ProjectServiceImpl;
-import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
+import pl.kozhanov.projectmanagementsystem.service.impl.UserServiceImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,9 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ProjectServiceImplTest {
-    private UserService userService = mock(UserService.class);
+    private UserServiceImpl userService = mock(UserServiceImpl.class);
     private ProjectStatusService projectStatusService = mock(ProjectStatusService.class);
     private ProjectRoleService projectRoleService = mock(ProjectRoleService.class);
     private ProjectRepo projectRepo = mock(ProjectRepo.class);
@@ -50,7 +51,7 @@ class ProjectServiceImplTest {
         roles.add("Creator");
         List<String> existingUsers = new ArrayList<>();
         existingUsers.add("Nick");
-        Mockito.when(projectRepo.getById(id)).thenReturn(project);
+        when(projectRepo.getById(id)).thenReturn(project);
         projectService.saveProject(id, title, description, projectManager, roles, existingUsers);
         assertEquals("PM", project.getProjectManager());
     }
@@ -62,8 +63,8 @@ class ProjectServiceImplTest {
         Project project = new Project();
         ProjectStatus ps = new ProjectStatus();
         ps.setStatusName(status);
-        Mockito.when(projectRepo.getById(id)).thenReturn(project);
-        Mockito.when(projectStatusService.findByStatusName(status)).thenReturn(ps);
+        when(projectRepo.getById(id)).thenReturn(project);
+        when(projectStatusService.findByStatusName(status)).thenReturn(ps);
         projectService.changeProjectStatus(id, status);
         assertEquals("new status", project.getStatus().getStatusName());
     }
@@ -75,9 +76,9 @@ class ProjectServiceImplTest {
         String commentText = "new comment";
         Project project = new Project();
         project.setComments(new ArrayList<>());
-        Mockito.when(projectRepo.getById(id)).thenReturn(project);
-        Mockito.when(userService.getCurrentLoggedInUsername()).thenReturn("Nick");
-        Mockito.when(userService.findByUsername(anyString())).thenReturn(user);
+        when(projectRepo.getById(id)).thenReturn(project);
+        when(userService.getCurrentLoggedInUsername()).thenReturn("Nick");
+        when(userService.findByUsername(anyString())).thenReturn(user);
         projectService.addNewComment(id, commentText);
         assertEquals("new comment", project.getComments().get(0).getCommentText());
     }

@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ProjectStatusServiceImplTest {
     private ProjectStatusRepo projectStatusRepo = mock(ProjectStatusRepo.class);
@@ -22,7 +23,7 @@ class ProjectStatusServiceImplTest {
         ProjectStatus ps = new ProjectStatus();
         ps.setStatusName("New");
         lps.add(ps);
-        Mockito.when(projectStatusRepo.findAll()).thenReturn(lps);
+        when(projectStatusRepo.findAll()).thenReturn(lps);
         projectStatusService.findAllStatuses();
         assertNotNull(projectStatusService.findAllStatuses());
         assertEquals("New", projectStatusService.findAllStatuses().get(0));

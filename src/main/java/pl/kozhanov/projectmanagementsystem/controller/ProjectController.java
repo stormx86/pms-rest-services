@@ -12,11 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectModelWrapper;
-import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
-import pl.kozhanov.projectmanagementsystem.service.ProjectService;
-import pl.kozhanov.projectmanagementsystem.service.ProjectStatusService;
-import pl.kozhanov.projectmanagementsystem.service.ProjectViewProjection;
-import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
+import pl.kozhanov.projectmanagementsystem.service.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;

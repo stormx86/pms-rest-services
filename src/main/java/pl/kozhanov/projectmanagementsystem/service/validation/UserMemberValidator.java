@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import pl.kozhanov.projectmanagementsystem.domain.User;
-import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
+import pl.kozhanov.projectmanagementsystem.service.impl.UserServiceImpl;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -14,7 +14,7 @@ import java.util.List;
 public class UserMemberValidator implements ConstraintValidator<UserMemberConstraint, List<String>> {
 
     @Autowired
-    UserService userService;
+    UserServiceImpl userService;
 
     @Override
     public void initialize(UserMemberConstraint constraintAnnotation) {

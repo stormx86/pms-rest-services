@@ -1,6 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectRole;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectRoleRepo;
 import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
@@ -17,25 +18,35 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
         this.projectRoleRepo = projectRoleRepo;
     }
 
-    public ProjectRole findByRoleName(String rolename) {
-        return projectRoleRepo.findByRoleName(rolename);
+    @Override
+    @Transactional
+    public ProjectRole findByRoleName(final String roleName) {
+        return projectRoleRepo.findByRoleName(roleName);
     }
 
+    @Override
+    @Transactional
     public List<ProjectRole> findAllByOrderByRoleName() {
         return projectRoleRepo.findAllByOrderByRoleName();
     }
 
+    @Override
+    @Transactional
     public List<String> findAllRoleNames() {
         List<String> existingRoles = new ArrayList<>();
         projectRoleRepo.findAll().forEach(role -> existingRoles.add(role.getRoleName()));
         return existingRoles;
     }
 
-    public void addNewProjectRole(ProjectRole projectRole) {
+    @Override
+    @Transactional
+    public void addNewProjectRole(final ProjectRole projectRole) {
         projectRoleRepo.save(projectRole);
     }
 
-    public void deleteProjectRole(ProjectRole projectRole) {
+    @Override
+    @Transactional
+    public void deleteProjectRole(final ProjectRole projectRole) {
         projectRoleRepo.delete(projectRole);
     }
 }

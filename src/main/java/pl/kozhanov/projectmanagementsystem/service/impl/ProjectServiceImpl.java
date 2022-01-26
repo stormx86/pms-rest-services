@@ -4,14 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kozhanov.projectmanagementsystem.domain.Comment;
 import pl.kozhanov.projectmanagementsystem.domain.Project;
 import pl.kozhanov.projectmanagementsystem.domain.UserProjectRoleLink;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectRepo;
-import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
-import pl.kozhanov.projectmanagementsystem.service.ProjectService;
-import pl.kozhanov.projectmanagementsystem.service.ProjectStatusService;
-import pl.kozhanov.projectmanagementsystem.service.ProjectViewProjection;
+import pl.kozhanov.projectmanagementsystem.service.*;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -36,18 +34,32 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectRepo = projectRepo;
     }
 
+    @Override
+    @Transactional
     public List<Project> findAll() {
         return projectRepo.findAll();
     }
 
-    public ProjectViewProjection findById(Integer id) {
+    @Override
+    @Transactional
+    public ProjectViewProjection findById(final Integer id) {
         return projectRepo.findById(id);
     }
 
-    public boolean addProject(String title, String description, String projectManager, List<String> roles,
-                              List<String> existingUsers) {
-        Project newProject = new Project(Instant.now(), title, description, userService.getCurrentLoggedInUsername(),
-                projectManager, projectStatusService.findByStatusName("Waiting"));
+    @Override
+    @Transactional
+    public boolean addProject(final String title,
+                              final String description,
+                              final String projectManager,
+                              final List<String> roles,
+                              final List<String> existingUsers) {
+        final Project newProject = new Project(
+                Instant.now(),
+                title,
+                description,
+                userService.getCurrentLoggedInUsername(),
+                projectManager,
+                projectStatusService.findByStatusName("Waiting"));
         if (roles != null) {
             Set<UserProjectRoleLink> uprlSet = new HashSet<>();
             IntStream.range(0, roles.size()).forEach(i -> uprlSet.add(new UserProjectRoleLink(
@@ -59,9 +71,15 @@ public class ProjectServiceImpl implements ProjectService {
         return true;
     }
 
-    public void saveProject(Integer id, String title, String description, String projectManager, List<String> roles,
-                            List<String> existingUsers) {
-        Project project = projectRepo.getById(id);
+    @Override
+    @Transactional
+    public void saveProject(final Integer id,
+                            final String title,
+                            final String description,
+                            final String projectManager,
+                            final List<String> roles,
+                            final List<String> existingUsers) {
+        final Project project = projectRepo.getById(id);
         project.setTitle(title);
         project.setDescription(description);
         project.setProjectManager(projectManager);
@@ -75,27 +93,36 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepo.saveAndFlush(project);
     }
 
-    public void deleteProject(Integer projectId) {
-        Project project = projectRepo.getById(projectId);
+    @Override
+    @Transactional
+    public void deleteProject(final Integer projectId) {
+        final Project project = projectRepo.getById(projectId);
         projectRepo.delete(project);
     }
 
-    public void changeProjectStatus(Integer id, String status) {
-        Project project = projectRepo.getById(id);
+    @Override
+    @Transactional
+    public void changeProjectStatus(final Integer id, final String status) {
+        final Project project = projectRepo.getById(id);
         project.setStatus(projectStatusService.findByStatusName(status));
         projectRepo.save(project);
     }
 
-    public void addNewComment(Integer id, String commentText) {
-        Project project = projectRepo.getById(id);
-        String currentLoggedInUser = userService.getCurrentLoggedInUsername();
+    @Override
+    @Transactional
+    public void addNewComment(final Integer id, final String commentText) {
+        final Project project = projectRepo.getById(id);
+        final String currentLoggedInUser = userService.getCurrentLoggedInUsername();
         project.getComments().add(new Comment(Instant.now(), commentText, project,
                 userService.findByUsername(currentLoggedInUser)));
         projectRepo.saveAndFlush(project);
     }
 
-    public Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter,
-                                                    Pageable pageable) {
+    @Override
+    @Transactional
+    public Page<ProjectViewProjection> findProjects(final String projectManagerFilter,
+                                                    final String createdByFilter,
+                                                    final Pageable pageable) {
         //if no one filter selected
 
         if (projectManagerFilter.equals("") && createdByFilter.equals("")) {
@@ -115,8 +142,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private Page<ProjectViewProjection> creatorAndPmFilterSelectedReturn(String projectManagerFilter,
-                                                                         String createdByFilter, Pageable pageable) {
+    private Page<ProjectViewProjection> creatorAndPmFilterSelectedReturn(final String projectManagerFilter,
+                                                                         final String createdByFilter,
+                                                                         final Pageable pageable) {
         if (userService.isAdmin()) {
             return projectRepo.findAllByProjectManagerAndCreator(projectManagerFilter, createdByFilter, pageable);
         } else {
@@ -126,7 +154,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private Page<ProjectViewProjection> creatorFilterSelectedReturn(String createdByFilter, Pageable pageable) {
+    private Page<ProjectViewProjection> creatorFilterSelectedReturn(final String createdByFilter, final Pageable pageable) {
         if (userService.isAdmin()) {
             return projectRepo.findAllByCreator(createdByFilter, pageable);
         } else {
@@ -136,7 +164,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private Page<ProjectViewProjection> projectManagerFilterRerurn(String projectManagerFilter, Pageable pageable) {
+    private Page<ProjectViewProjection> projectManagerFilterRerurn(final String projectManagerFilter, final Pageable pageable) {
         if (userService.isAdmin()) {
             return projectRepo.findAllByProjectManager(projectManagerFilter, pageable);
         } else {
@@ -146,7 +174,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private Page<ProjectViewProjection> noFiltersSelectedReturn(Pageable pageable) {
+    private Page<ProjectViewProjection> noFiltersSelectedReturn(final Pageable pageable) {
         if (userService.isAdmin()) {
             return projectRepo.getAll(pageable);
         } else {

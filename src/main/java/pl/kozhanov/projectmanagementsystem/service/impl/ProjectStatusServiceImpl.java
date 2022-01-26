@@ -1,6 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectStatus;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectStatusRepo;
 import pl.kozhanov.projectmanagementsystem.service.ProjectStatusService;
@@ -17,10 +18,14 @@ public class ProjectStatusServiceImpl implements ProjectStatusService {
         this.projectStatusRepo = projectStatusRepo;
     }
 
-    public ProjectStatus findByStatusName(String statusName) {
+    @Override
+    @Transactional
+    public ProjectStatus findByStatusName(final String statusName) {
         return projectStatusRepo.findByStatusName(statusName);
     }
 
+    @Override
+    @Transactional
     public List<String> findAllStatuses() {
         List<String> statuses = new ArrayList<>();
         projectStatusRepo.findAll().forEach(status -> statuses.add(status.getStatusName()));
