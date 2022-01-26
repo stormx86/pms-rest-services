@@ -1,6 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kozhanov.projectmanagementsystem.domain.Comment;
 import pl.kozhanov.projectmanagementsystem.repos.CommentRepo;
 import pl.kozhanov.projectmanagementsystem.service.CommentService;
@@ -14,7 +15,9 @@ public class CommentServiceImpl implements CommentService {
         this.commentRepo = commentRepo;
     }
 
-    public void deleteComment(Long commentId) {
+    @Override
+    @Transactional
+    public void deleteComment(final Long commentId) {
         Comment cmt = commentRepo.getById(commentId);
         commentRepo.delete(cmt);
     }

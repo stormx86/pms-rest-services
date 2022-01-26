@@ -11,7 +11,7 @@ import pl.kozhanov.projectmanagementsystem.domain.GlobalRole;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectRole;
 import pl.kozhanov.projectmanagementsystem.domain.User;
 import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
-import pl.kozhanov.projectmanagementsystem.service.impl.UserService;
+import pl.kozhanov.projectmanagementsystem.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Map;

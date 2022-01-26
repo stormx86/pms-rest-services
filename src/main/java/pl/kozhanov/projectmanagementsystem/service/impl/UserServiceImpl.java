@@ -9,55 +9,64 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kozhanov.projectmanagementsystem.domain.GlobalRole;
 import pl.kozhanov.projectmanagementsystem.domain.User;
 import pl.kozhanov.projectmanagementsystem.repos.UserRepo;
 import pl.kozhanov.projectmanagementsystem.service.ProjectService;
+import pl.kozhanov.projectmanagementsystem.service.UserService;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-public class UserService implements UserDetailsService {
-    private UserRepo userRepo;
-    private ProjectService projectService;
-    private PasswordEncoder passwordEncoder;
+public class UserServiceImpl implements UserService, UserDetailsService {
 
-    @Autowired
-    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private ProjectService projectService;
+
+    public UserServiceImpl(final UserRepo userRepo,
+                           final PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Autowired
-    public void setProjectService(ProjectService projectService) {
+    public void setProjectService(final ProjectService projectService) {
         this.projectService = projectService;
     }
 
+    @Override
+    @Transactional
     public List<User> findAll() {
         return userRepo.findAll();
     }
 
-    public Page<User> findAllByOrderByUsernameAsc(Pageable pageable) {
+    @Override
+    @Transactional
+    public Page<User> findAllByOrderByUsernameAsc(final Pageable pageable) {
         return userRepo.findAllByOrderByUsernameAsc(pageable);
     }
 
-    public User findByUsername(String username) {
+    @Override
+    @Transactional
+    public User findByUsername(final String username) {
         return userRepo.findByUsername(username);
     }
 
     //usernames for autocomplete
-    public List<String> findByUsernameLike(String term) {
+    @Override
+    @Transactional
+    public List<String> findByUsernameLike(final String term) {
         return userRepo.findByUsernameLike(term);
     }
 
-    private List<String> findAllUsersOnProject(Integer projectId) {
-        return userRepo.findAllUsersOnProject(projectId);
-    }
 
+    @Override
     public String getCurrentLoggedInUsername() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             return ((UserDetails) principal).getUsername();
         } else {
@@ -65,34 +74,33 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    @Override
     public boolean isAdmin() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
     }
 
-    private boolean isCreator(String currentLoggedInUser, Integer projectId) {
-        return projectService.findById(projectId).getCreator().equals(currentLoggedInUser);
-    }
-
-    private boolean isProjectManager(String currentLoggedInUser, Integer projectId) {
-        return projectService.findById(projectId).getProjectManager().equals(currentLoggedInUser);
-    }
-
-    public boolean hasProjectAuthorities(String currentLoggedInUser, Integer projectId) {
+    @Override
+    @Transactional
+    public boolean hasProjectAuthorities(final String currentLoggedInUser, final Integer projectId) {
         return !(!findAllUsersOnProject(projectId).contains(currentLoggedInUser) &&
                 !isAdmin() &&
                 !isCreator(currentLoggedInUser, projectId) &&
                 !isProjectManager(currentLoggedInUser, projectId));
     }
 
-    public void addUser(User user) {
+    @Override
+    @Transactional
+    public void addUser(final User user) {
         user.setPassword(passwordEncoder.encode(user.getUsername()));
         user.setActive(true);
         user.setGlobalRoles(Collections.singleton(GlobalRole.USER));
         userRepo.save(user);
     }
 
-    public String saveUser(Integer userId, String newUsername, String[] roles) {
+    @Override
+    @Transactional
+    public String saveUser(final Integer userId, final String newUsername, final String[] roles) {
         for (User u : userRepo.findAll()) {
             //if newUsername is in userDB & newUsername != username of current userID
             if (u.getUsername().equals(newUsername) && !u.getUsername().equals(userRepo.getById(userId).getUsername()))
@@ -100,7 +108,7 @@ public class UserService implements UserDetailsService {
             else if (newUsername.equals("")) return "Username field can't be empty";
         }
 
-        User user = userRepo.getById(userId);
+        final User user = userRepo.getById(userId);
         user.setUsername(newUsername);
         user.getGlobalRoles().clear();
 
@@ -109,23 +117,42 @@ public class UserService implements UserDetailsService {
         return "Successfully saved!";
     }
 
-    public void deleteUser(User user) {
+    @Override
+    @Transactional
+    public void deleteUser(final User user) {
         userRepo.delete(user);
     }
 
-    public void changeUserPassword(String username, String password) {
-        User user = userRepo.findByUsername(username);
+    @Override
+    @Transactional
+    public void changeUserPassword(final String username, final String password) {
+        final User user = userRepo.findByUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         userRepo.save(user);
     }
 
-    public void resetUserPassword(User user) {
+    @Override
+    @Transactional
+    public void resetUserPassword(final User user) {
         user.setPassword(passwordEncoder.encode(user.getUsername()));
         userRepo.save(user);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
+    @Transactional
+    public UserDetails loadUserByUsername(final String username) {
         return userRepo.findByUsername(username);
+    }
+
+    private List<String> findAllUsersOnProject(final Integer projectId) {
+        return userRepo.findAllUsersOnProject(projectId);
+    }
+
+    private boolean isCreator(final String currentLoggedInUser, final Integer projectId) {
+        return projectService.findById(projectId).getCreator().equals(currentLoggedInUser);
+    }
+
+    private boolean isProjectManager(final String currentLoggedInUser, final Integer projectId) {
+        return projectService.findById(projectId).getProjectManager().equals(currentLoggedInUser);
     }
 }

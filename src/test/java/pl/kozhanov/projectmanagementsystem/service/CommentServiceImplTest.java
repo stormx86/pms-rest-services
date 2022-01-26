@@ -7,7 +7,7 @@ import pl.kozhanov.projectmanagementsystem.repos.CommentRepo;
 import pl.kozhanov.projectmanagementsystem.service.impl.CommentServiceImpl;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 class CommentServiceImplTest {
     private CommentRepo commentRepo = mock(CommentRepo.class);
@@ -17,8 +17,8 @@ class CommentServiceImplTest {
     void delCommentTest() {
         long id = 1;
         Comment comment = new Comment();
-        Mockito.when(commentRepo.getById(anyLong())).thenReturn(comment);
+        when(commentRepo.getById(anyLong())).thenReturn(comment);
         commentService.deleteComment(id);
-        Mockito.verify(commentRepo, Mockito.times(1)).delete(comment);
+        verify(commentRepo, Mockito.times(1)).delete(comment);
     }
 }
