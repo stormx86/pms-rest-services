@@ -17,7 +17,7 @@ public class ProjectRole {
     @NewProjectRoleConstraint
     private String roleName;
 
-    @OneToMany(mappedBy = "projectRole", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
+    @OneToMany(mappedBy = "projectRole", cascade = CascadeType.ALL, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
     public ProjectRole() {

@@ -17,14 +17,14 @@ public class Project {
     private String creator;
     private String projectManager;
 
-    @ManyToOne
-    @JoinColumn(name="status_id", referencedColumnName = "id")
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name="status_id")
     private ProjectStatus status;
 
-    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval= true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval= true)
     private Set<UserProjectRoleLink> userProjectRoleLink;
 
-    @OneToMany(mappedBy = "project", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     public Project(Instant createdAt, String title, String description, String creator, String projectManager,

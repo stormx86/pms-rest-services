@@ -1,9 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import pl.kozhanov.projectmanagementsystem.domain.Project;
+import pl.kozhanov.projectmanagementsystem.dto.ProjectDto;
 
 import java.util.List;
 
@@ -11,22 +9,13 @@ public interface ProjectService {
 
     List<Project> findAll();
 
-    ProjectViewProjection findById(Integer id);
+    ProjectDto findProjectById(Integer projectId);
 
-    boolean addProject(String title, String description, String projectManager, List<String> roles, List<String> existingUsers);
+    List<ProjectDto> findProjects();
 
-    void saveProject(Integer id, String title, String description, String projectManager, List<String> roles,
-                List<String> existingUsers);
+    Integer createProject(ProjectDto newProjectDto);
+
+    Integer updateProject(Integer projectId, ProjectDto newProjectDto);
 
     void deleteProject(Integer projectId);
-
-    void changeProjectStatus(Integer id, String status);
-
-    void addNewComment(Integer id, String commentText);
-
-    Page<ProjectViewProjection> findProjects(String projectManagerFilter, String createdByFilter,
-                                             Pageable pageable);
-
-    Sort sortManage(Sort sort);
-
 }

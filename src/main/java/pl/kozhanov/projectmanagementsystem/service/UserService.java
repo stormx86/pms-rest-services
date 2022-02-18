@@ -16,11 +16,9 @@ public interface UserService {
 
     List<String> findByUsernameLike(String term);
 
-    String getCurrentLoggedInUsername();
-
     boolean isAdmin();
 
-    boolean hasProjectAuthorities(String currentLoggedInUser, Integer projectId);
+/*    boolean hasProjectAuthorities(String currentLoggedInUser, Integer projectId);*/
 
     void addUser(User user);
 

@@ -1,6 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.service;
 
 import pl.kozhanov.projectmanagementsystem.domain.ProjectRole;
+import pl.kozhanov.projectmanagementsystem.dto.ProjectRoleDto;
 
 import java.util.List;
 
@@ -10,9 +11,5 @@ public interface ProjectRoleService {
 
     List<ProjectRole> findAllByOrderByRoleName();
 
-    List<String> findAllRoleNames();
-
-    void addNewProjectRole(ProjectRole projectRole);
-
-    void deleteProjectRole(ProjectRole projectRole);
+    List<ProjectRoleDto> findAllRoleNames();
 }
