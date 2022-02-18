@@ -2,33 +2,47 @@ package pl.kozhanov.projectmanagementsystem.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.kozhanov.projectmanagementsystem.domain.Project;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectStatus;
-import pl.kozhanov.projectmanagementsystem.repos.ProjectStatusRepo;
+import pl.kozhanov.projectmanagementsystem.dto.NewProjectStatusRequestDto;
+import pl.kozhanov.projectmanagementsystem.dto.ProjectStatusDto;
+import pl.kozhanov.projectmanagementsystem.repos.ProjectRepo;
 import pl.kozhanov.projectmanagementsystem.service.ProjectStatusService;
+import pl.kozhanov.projectmanagementsystem.service.mapping.OrikaBeanMapper;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class ProjectStatusServiceImpl implements ProjectStatusService {
 
-    private final ProjectStatusRepo projectStatusRepo;
+    private final ProjectRepo projectRepo;
+    private final OrikaBeanMapper mapper;
 
-    public ProjectStatusServiceImpl(final ProjectStatusRepo projectStatusRepo) {
-        this.projectStatusRepo = projectStatusRepo;
+    public ProjectStatusServiceImpl(final ProjectRepo projectRepo,
+                                    final OrikaBeanMapper mapper) {
+        this.projectRepo = projectRepo;
+        this.mapper = mapper;
     }
 
     @Override
     @Transactional
-    public ProjectStatus findByStatusName(final String statusName) {
-        return projectStatusRepo.findByStatusName(statusName);
+    public List<ProjectStatusDto> findAllStatuses() {
+        final List<ProjectStatus> projectStatusList = Arrays.asList(ProjectStatus.values());
+
+        return projectStatusList.stream().map(projectStatus -> mapper.map(projectStatus, ProjectStatusDto.class))
+                .collect(toList());
     }
 
     @Override
     @Transactional
-    public List<String> findAllStatuses() {
-        List<String> statuses = new ArrayList<>();
-        projectStatusRepo.findAll().forEach(status -> statuses.add(status.getStatusName()));
-        return statuses;
+    public String setNewProjectStatus(final NewProjectStatusRequestDto newProjectStatusRequestDto) {
+        final Project project = projectRepo.getById(newProjectStatusRequestDto.getProjectId());
+        final ProjectStatus newProjectProjectStatus = ProjectStatus.valueOf(newProjectStatusRequestDto.getNewStatus());
+
+        project.setStatus(newProjectProjectStatus);
+        return newProjectProjectStatus.name();
     }
 }

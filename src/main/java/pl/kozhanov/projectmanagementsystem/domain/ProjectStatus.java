@@ -1,41 +1,15 @@
 package pl.kozhanov.projectmanagementsystem.domain;
 
-import javax.persistence.*;
-import java.util.Set;
+public enum ProjectStatus {
+    WAITING(0),
+    PROCESSING(1),
+    CLOSED(2);
 
-@Entity
-@Table(name = "project_status")
-public class ProjectStatus {
+    private int code;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
-    private String statusName;
+    ProjectStatus(int code) {this.code = code;}
 
-    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
-    private Set<Project> projects;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
-    public Set<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
+    public int getCode() {
+        return code;
     }
 }

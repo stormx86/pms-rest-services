@@ -3,19 +3,24 @@ package pl.kozhanov.projectmanagementsystem.service.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectRole;
+import pl.kozhanov.projectmanagementsystem.dto.ProjectRoleDto;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectRoleRepo;
 import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
+import pl.kozhanov.projectmanagementsystem.service.mapping.OrikaBeanMapper;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectRoleServiceImpl implements ProjectRoleService {
 
     private final ProjectRoleRepo projectRoleRepo;
+    private final OrikaBeanMapper mapper;
 
-    public ProjectRoleServiceImpl(final ProjectRoleRepo projectRoleRepo) {
+    public ProjectRoleServiceImpl(final ProjectRoleRepo projectRoleRepo,
+                                  final OrikaBeanMapper mapper) {
         this.projectRoleRepo = projectRoleRepo;
+        this.mapper = mapper;
     }
 
     @Override
@@ -32,21 +37,12 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 
     @Override
     @Transactional
-    public List<String> findAllRoleNames() {
-        List<String> existingRoles = new ArrayList<>();
-        projectRoleRepo.findAll().forEach(role -> existingRoles.add(role.getRoleName()));
-        return existingRoles;
-    }
+    public List<ProjectRoleDto> findAllRoleNames() {
+        final List<ProjectRoleDto> projectRoles = projectRoleRepo.findAll()
+                .stream()
+                .map(role -> mapper.map(role, ProjectRoleDto.class))
+                .collect(Collectors.toList());
 
-    @Override
-    @Transactional
-    public void addNewProjectRole(final ProjectRole projectRole) {
-        projectRoleRepo.save(projectRole);
-    }
-
-    @Override
-    @Transactional
-    public void deleteProjectRole(final ProjectRole projectRole) {
-        projectRoleRepo.delete(projectRole);
+        return projectRoles;
     }
 }

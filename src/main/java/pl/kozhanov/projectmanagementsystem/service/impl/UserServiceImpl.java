@@ -5,13 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kozhanov.projectmanagementsystem.domain.GlobalRole;
 import pl.kozhanov.projectmanagementsystem.domain.User;
+import pl.kozhanov.projectmanagementsystem.repos.ProjectRepo;
 import pl.kozhanov.projectmanagementsystem.repos.UserRepo;
 import pl.kozhanov.projectmanagementsystem.service.ProjectService;
 import pl.kozhanov.projectmanagementsystem.service.UserService;
@@ -21,15 +21,18 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
+    private final ProjectRepo projectRepo;
     private final PasswordEncoder passwordEncoder;
     private ProjectService projectService;
 
     public UserServiceImpl(final UserRepo userRepo,
+                           final ProjectRepo projectRepo,
                            final PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.projectRepo = projectRepo;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -53,7 +56,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public User findByUsername(final String username) {
-        return userRepo.findByUsername(username);
+        return userRepo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
     }
 
     //usernames for autocomplete
@@ -65,36 +69,26 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
     @Override
-    public String getCurrentLoggedInUsername() {
-        final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername();
-        } else {
-            return principal.toString();
-        }
-    }
-
-    @Override
     public boolean isAdmin() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
     }
 
-    @Override
+/*    @Override
     @Transactional
     public boolean hasProjectAuthorities(final String currentLoggedInUser, final Integer projectId) {
         return !(!findAllUsersOnProject(projectId).contains(currentLoggedInUser) &&
                 !isAdmin() &&
                 !isCreator(currentLoggedInUser, projectId) &&
                 !isProjectManager(currentLoggedInUser, projectId));
-    }
+    }*/
 
     @Override
     @Transactional
     public void addUser(final User user) {
         user.setPassword(passwordEncoder.encode(user.getUsername()));
         user.setActive(true);
-        user.setGlobalRoles(Collections.singleton(GlobalRole.USER));
+        user.setGlobalRoles(Collections.singleton(GlobalRole.ROLE_USER));
         userRepo.save(user);
     }
 
@@ -126,7 +120,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public void changeUserPassword(final String username, final String password) {
-        final User user = userRepo.findByUsername(username);
+        final User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
         user.setPassword(passwordEncoder.encode(password));
         userRepo.save(user);
     }
@@ -138,21 +133,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepo.save(user);
     }
 
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(final String username) {
-        return userRepo.findByUsername(username);
-    }
-
     private List<String> findAllUsersOnProject(final Integer projectId) {
         return userRepo.findAllUsersOnProject(projectId);
     }
 
-    private boolean isCreator(final String currentLoggedInUser, final Integer projectId) {
-        return projectService.findById(projectId).getCreator().equals(currentLoggedInUser);
+/*    private boolean isCreator(final String currentLoggedInUser, final Integer projectId) {
+        return projectRepo.getById(projectId).getCreator().equals(currentLoggedInUser);
     }
 
     private boolean isProjectManager(final String currentLoggedInUser, final Integer projectId) {
-        return projectService.findById(projectId).getProjectManager().equals(currentLoggedInUser);
-    }
+        return projectRepo.getById(projectId).equals(currentLoggedInUser);
+    }*/
 }
