@@ -31,7 +31,7 @@ public class CommentController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/comment")
-    public ResponseEntity<Void> addNewComment(@RequestParam(value = "commentId") final Long commentId) {
+    public ResponseEntity<Void> deleteNewComment(@RequestParam(value = "commentId") final Long commentId) {
         commentService.deleteComment(commentId);
         LOGGER.info("Deleting comment with id: "+ commentId);
         return ResponseEntity.noContent().build();
