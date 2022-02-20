@@ -1,7 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.domain;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +11,7 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
     private String title;
     private String description;
     private String creator;
@@ -27,7 +27,7 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public Project(Instant createdAt, String title, String description, String creator, String projectManager,
+    public Project(LocalDateTime createdAt, String title, String description, String creator, String projectManager,
                    ProjectStatus status) {
         this.title = title;
         this.description = description;
@@ -72,11 +72,11 @@ public class Project {
         this.status = status;
     }
 
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public String getCreator() {
         return creator;

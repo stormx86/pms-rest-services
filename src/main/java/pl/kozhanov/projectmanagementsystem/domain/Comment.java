@@ -1,10 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.domain;
 
 import javax.persistence.*;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
@@ -13,9 +10,8 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
     private String commentText;
-    private String createdAtView;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="project_id", referencedColumnName = "id")
@@ -28,13 +24,11 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(Instant createdAt, String commentText, Project project, User user) {
+    public Comment(LocalDateTime createdAt, String commentText, Project project, User user) {
         this.createdAt = createdAt;
         this.commentText = commentText;
         this.project = project;
         this.user = user;
-        this.createdAtView = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
-                .format(ZonedDateTime.ofInstant(createdAt, ZoneId.systemDefault()));
     }
 
     public Long getId() {
@@ -45,11 +39,11 @@ public class Comment {
         this.id = id;
     }
 
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -76,8 +70,4 @@ public class Comment {
     public void setUser(User user) {
         this.user = user;
     }
-
-    public String getCreatedAtView() { return createdAtView; }
-
-    public void setCreatedAtView() {this.createdAtView = createdAtView;}
 }

@@ -12,13 +12,14 @@ import pl.kozhanov.projectmanagementsystem.repos.CommentRepo;
 import pl.kozhanov.projectmanagementsystem.repos.ProjectRoleRepo;
 import pl.kozhanov.projectmanagementsystem.repos.UserRepo;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static pl.kozhanov.projectmanagementsystem.service.utils.DateTimeUtils.localDateTimeToStringConverter;
 
 @Component
 public class ProjectToProjectDtoMapper extends DefaultCustomMapper<Project, ProjectDto> {
@@ -41,6 +42,7 @@ public class ProjectToProjectDtoMapper extends DefaultCustomMapper<Project, Proj
         projectDto.setStatus(project.getStatus().name());
         projectDto.setComments(getComments(project));
         projectDto.setUserProjectRoleDto(getUserProjectRoleDto(project));
+        projectDto.setCreatedAt(localDateTimeToStringConverter(project.getCreatedAt()));
     }
 
     @Override
@@ -48,7 +50,7 @@ public class ProjectToProjectDtoMapper extends DefaultCustomMapper<Project, Proj
         if(projectDto.getProjectId() != null){
             project.setId(projectDto.getProjectId());
         }
-        project.setCreatedAt(Instant.now());
+        project.setCreatedAt(LocalDateTime.now());
         project.setTitle(projectDto.getTitle());
         project.setDescription(projectDto.getDescription());
         project.setCreator(projectDto.getCreator());
