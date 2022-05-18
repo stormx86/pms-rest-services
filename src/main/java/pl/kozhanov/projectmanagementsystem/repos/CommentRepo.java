@@ -8,7 +8,6 @@ import pl.kozhanov.projectmanagementsystem.domain.Comment;
 import java.util.List;
 
 public interface CommentRepo extends JpaRepository<Comment, Long> {
-    Comment getById(Long id);
 
     @Query("SELECT c " +
             "FROM Comment c " +

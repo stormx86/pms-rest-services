@@ -1,15 +1,17 @@
 package pl.kozhanov.projectmanagementsystem.service.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import pl.kozhanov.projectmanagementsystem.service.impl.UserServiceImpl;
+import pl.kozhanov.projectmanagementsystem.repos.UserRepo;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class NewUserValidator implements ConstraintValidator<NewUserConstraint, String> {
 
-    @Autowired
-    UserServiceImpl userService;
+    private final UserRepo userRepo;
+
+    public NewUserValidator(final UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
 
     @Override
     public void initialize(NewUserConstraint constraintAnnotation) {
@@ -17,6 +19,9 @@ public class NewUserValidator implements ConstraintValidator<NewUserConstraint, 
 
     @Override
     public boolean isValid(String username, ConstraintValidatorContext constraintValidatorContext) {
-        return !userService.findAll().contains(userService.findByUsername(username));
+
+       return userRepo.findAll()
+               .stream()
+               .noneMatch(user -> username.equals(user.getUsername()));
     }
 }

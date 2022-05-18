@@ -1,49 +1,34 @@
 package pl.kozhanov.projectmanagementsystem.service.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 import pl.kozhanov.projectmanagementsystem.domain.User;
-import pl.kozhanov.projectmanagementsystem.service.impl.UserServiceImpl;
+import pl.kozhanov.projectmanagementsystem.dto.UserProjectRoleDto;
+import pl.kozhanov.projectmanagementsystem.repos.UserRepo;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class UserMemberValidator implements ConstraintValidator<UserMemberConstraint, List<String>> {
+public class UserMemberValidator implements ConstraintValidator<UserMemberConstraint, Set<UserProjectRoleDto>> {
 
-    @Autowired
-    UserServiceImpl userService;
+    private final UserRepo userRepo;
+
+    public UserMemberValidator(final UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
 
     @Override
     public void initialize(UserMemberConstraint constraintAnnotation) {
     }
 
     @Override
-    public boolean isValid(List<String> userMembers, ConstraintValidatorContext ctx) {
-        if (userMembers == null) return true;
-        //get all usernames from DB
-        List<String> allUsers = new ArrayList<>();
-        for(User user: userService.findAll())
-        {
-            allUsers.add(user.getUsername());
-        }
+    public boolean isValid(Set<UserProjectRoleDto> userMemberRoles, ConstraintValidatorContext ctx) {
 
-        List<String> userMembersNames = new ArrayList<>();
-        List<String> userMembersInputsId = new ArrayList<>();
-        for(String str:userMembers)
-            {
-                String[] split = str.split("!");
-                userMembersNames.add(split[0]);
-                if(!allUsers.contains(split[0])) userMembersInputsId.add(split[1]);
-            }
+        final List<String> allDataBaseUsernames = userRepo.findAll().stream().map(User::getUsername).collect(Collectors.toList());
 
-        if(allUsers.containsAll(userMembersNames)) return true;
-        else
-        {
-            RequestContextHolder.getRequestAttributes().setAttribute("ErrorId", userMembersInputsId, RequestAttributes.SCOPE_REQUEST);
-            return false;
-        }
+        final List<String> inputUserMemberNames = userMemberRoles.stream().map(UserProjectRoleDto::getUserName).collect(Collectors.toList());
+
+        return allDataBaseUsernames.containsAll(inputUserMemberNames);
     }
 }

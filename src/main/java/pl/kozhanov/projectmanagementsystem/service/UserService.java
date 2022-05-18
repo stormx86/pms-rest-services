@@ -1,8 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import pl.kozhanov.projectmanagementsystem.domain.User;
+import pl.kozhanov.projectmanagementsystem.dto.UserDto;
 
 import java.util.List;
 
@@ -10,23 +9,21 @@ public interface UserService {
 
     List<User> findAll();
 
-    Page<User> findAllByOrderByUsernameAsc(Pageable pageable);
+    List<UserDto> getAllUsers();
 
-    User findByUsername(String username);
+    List<UserDto> updateUserRoles(Integer userId, UserDto updatedUser);
+
+    List<UserDto> addNewUser(UserDto userDto);
+
+    List<UserDto> deleteUser(Integer userId);
+
+    void resetUserPassword(Integer userId);
+
+    UserDto getUserProfile(Integer userId);
+
+    UserDto changeUserPassword(UserDto userDto);
 
     List<String> findByUsernameLike(String term);
 
     boolean isAdmin();
-
-/*    boolean hasProjectAuthorities(String currentLoggedInUser, Integer projectId);*/
-
-    void addUser(User user);
-
-    String saveUser(Integer userId, String newUsername, String[] roles);
-
-    void deleteUser(User user);
-
-    void changeUserPassword(String username, String password);
-
-    void resetUserPassword(User user);
 }

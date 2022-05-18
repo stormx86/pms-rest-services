@@ -1,6 +1,7 @@
 package pl.kozhanov.projectmanagementsystem.dto;
 
 import pl.kozhanov.projectmanagementsystem.service.validation.ProjectManagerConstraint;
+import pl.kozhanov.projectmanagementsystem.service.validation.UserMemberConstraint;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -21,11 +22,11 @@ public class ProjectDto {
     private String creator;
 
     @ProjectManagerConstraint
-    @NotBlank(message = "Project Manager field can't be empty")
     private String projectManager;
 
     private String status;
 
+    @UserMemberConstraint
     private Set<UserProjectRoleDto> userProjectRoleDto;
 
     private List<CommentDto> comments;
