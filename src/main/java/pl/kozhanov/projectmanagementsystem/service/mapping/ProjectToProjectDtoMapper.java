@@ -39,7 +39,7 @@ public class ProjectToProjectDtoMapper extends DefaultCustomMapper<Project, Proj
     @Override
     public void mapAtoB(Project project, ProjectDto projectDto, MappingContext context) {
         projectDto.setProjectId(project.getId());
-        projectDto.setStatus(project.getStatus().name());
+        projectDto.setStatus(project.getStatus().getDescription());
         projectDto.setComments(getComments(project));
         projectDto.setUserProjectRoleDto(getUserProjectRoleDto(project));
         projectDto.setCreatedAt(localDateTimeToStringConverter(project.getCreatedAt()));

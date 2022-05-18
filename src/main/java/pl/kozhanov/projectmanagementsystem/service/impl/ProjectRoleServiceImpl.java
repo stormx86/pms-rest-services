@@ -8,8 +8,11 @@ import pl.kozhanov.projectmanagementsystem.repos.ProjectRoleRepo;
 import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
 import pl.kozhanov.projectmanagementsystem.service.mapping.OrikaBeanMapper;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class ProjectRoleServiceImpl implements ProjectRoleService {
@@ -25,18 +28,6 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 
     @Override
     @Transactional
-    public ProjectRole findByRoleName(final String roleName) {
-        return projectRoleRepo.findByRoleName(roleName);
-    }
-
-    @Override
-    @Transactional
-    public List<ProjectRole> findAllByOrderByRoleName() {
-        return projectRoleRepo.findAllByOrderByRoleName();
-    }
-
-    @Override
-    @Transactional
     public List<ProjectRoleDto> findAllRoleNames() {
         final List<ProjectRoleDto> projectRoles = projectRoleRepo.findAll()
                 .stream()
@@ -44,5 +35,30 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
                 .collect(Collectors.toList());
 
         return projectRoles;
+    }
+
+    @Override
+    @Transactional
+    public List<ProjectRoleDto> addNewProjectRole(final ProjectRoleDto projectRoleDto) {
+        final ProjectRole newRole = mapper.map(projectRoleDto, ProjectRole.class);
+        projectRoleRepo.save(newRole);
+
+        return projectRoleRepo.findAll()
+                .stream()
+                .map(role-> mapper.map(role, ProjectRoleDto.class))
+                .collect(toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ProjectRoleDto> deleteProjectRole(final Integer projectRoleId){
+        final ProjectRole projectRoleForDelete =  projectRoleRepo.findById(projectRoleId)
+                .orElseThrow(() -> new EntityNotFoundException("Project Role not found with id: " + projectRoleId));
+        projectRoleRepo.delete(projectRoleForDelete);
+
+        return projectRoleRepo.findAll()
+                .stream()
+                .map(role-> mapper.map(role, ProjectRoleDto.class))
+                .collect(toList());
     }
 }

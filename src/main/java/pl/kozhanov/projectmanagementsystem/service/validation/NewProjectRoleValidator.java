@@ -1,16 +1,17 @@
 package pl.kozhanov.projectmanagementsystem.service.validation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
-import pl.kozhanov.projectmanagementsystem.service.impl.ProjectRoleServiceImpl;
+import pl.kozhanov.projectmanagementsystem.repos.ProjectRoleRepo;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class NewProjectRoleValidator implements ConstraintValidator<NewProjectRoleConstraint, String> {
 
-    @Autowired
-    ProjectRoleService projectRoleService;
+    private final ProjectRoleRepo projectRoleRepo;
+
+    public NewProjectRoleValidator(final ProjectRoleRepo projectRoleRepo) {
+        this.projectRoleRepo = projectRoleRepo;
+    }
 
     @Override
     public void initialize(NewProjectRoleConstraint constraintAnnotation) {
@@ -18,6 +19,8 @@ public class NewProjectRoleValidator implements ConstraintValidator<NewProjectRo
 
     @Override
     public boolean isValid(String roleName, ConstraintValidatorContext constraintValidatorContext) {
-        return !projectRoleService.findAllRoleNames().contains(roleName);
+        return projectRoleRepo.findAll()
+                .stream()
+                .noneMatch(role -> roleName.equals(role.getRoleName()));
     }
 }

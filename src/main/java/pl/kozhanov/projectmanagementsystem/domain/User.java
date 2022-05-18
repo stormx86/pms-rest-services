@@ -1,9 +1,6 @@
 package pl.kozhanov.projectmanagementsystem.domain;
 
-import pl.kozhanov.projectmanagementsystem.service.validation.NewUserConstraint;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +12,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @NotBlank(message = "Username field can't be empty")
-    @NewUserConstraint
     private String username;
     private String password;
     private boolean active;
