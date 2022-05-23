@@ -6,10 +6,10 @@ import java.lang.annotation.*;
 
 
 @Documented
-@Constraint(validatedBy = ProjectManagerValidator.class)
+@Constraint(validatedBy = ValidUsernameValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProjectManagerConstraint {
+public @interface ValidUsernameConstraint {
     String message() default "User not found";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

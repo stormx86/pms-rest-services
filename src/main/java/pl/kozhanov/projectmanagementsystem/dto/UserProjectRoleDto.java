@@ -1,11 +1,14 @@
 package pl.kozhanov.projectmanagementsystem.dto;
 
+import pl.kozhanov.projectmanagementsystem.service.validation.ValidUsernameConstraint;
+
 public class UserProjectRoleDto {
 
     private Integer userProjectRoleId;
 
     private Integer userId;
 
+    @ValidUsernameConstraint
     private String userName;
 
     private Integer projectId;

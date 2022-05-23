@@ -1,9 +1,9 @@
 package pl.kozhanov.projectmanagementsystem.dto;
 
 import pl.kozhanov.projectmanagementsystem.service.validation.ProjectManagerConstraint;
-import pl.kozhanov.projectmanagementsystem.service.validation.UserMemberConstraint;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
@@ -13,10 +13,10 @@ public class ProjectDto {
 
     private String createdAt;
 
-    @NotBlank(message = "Title field can't be empty")
+    @Size(min = 5, message = "Title must be at least 5 characters long")
     private String title;
 
-    @NotBlank(message = "Description field can't be empty")
+    @Size(min = 5, message = "Description must be at least 5 characters long")
     private String description;
 
     private String creator;
@@ -26,7 +26,7 @@ public class ProjectDto {
 
     private String status;
 
-    @UserMemberConstraint
+    @Valid
     private Set<UserProjectRoleDto> userProjectRoleDto;
 
     private List<CommentDto> comments;
