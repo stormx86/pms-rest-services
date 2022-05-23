@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target( { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UserMemberConstraint {
-    String message() default "No such username in the data base";
+    String message() default "User not found";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
