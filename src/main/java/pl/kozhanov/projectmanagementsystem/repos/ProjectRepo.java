@@ -8,11 +8,9 @@ import java.util.Optional;
 
 public interface ProjectRepo extends JpaRepository<Project, Long> {
 
-        List<Project> findAll();
+    List<Project> findAll();
 
-        Optional<Project> findById(Integer id);
-
-        Project getById(Integer id);
+    Optional<Project> findById(Integer id);
 
 }
 

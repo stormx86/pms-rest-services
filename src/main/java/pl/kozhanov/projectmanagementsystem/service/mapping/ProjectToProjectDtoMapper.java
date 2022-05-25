@@ -39,7 +39,7 @@ public class ProjectToProjectDtoMapper extends DefaultCustomMapper<Project, Proj
     @Override
     public void mapAtoB(Project project, ProjectDto projectDto, MappingContext context) {
         projectDto.setProjectId(project.getId());
-        projectDto.setStatus(project.getStatus().getDescription());
+        projectDto.setStatus(project.getStatus().name());
         projectDto.setComments(getComments(project));
         projectDto.setUserProjectRoleDto(getUserProjectRoleDto(project));
         projectDto.setCreatedAt(localDateTimeToStringConverter(project.getCreatedAt()));
@@ -47,7 +47,7 @@ public class ProjectToProjectDtoMapper extends DefaultCustomMapper<Project, Proj
 
     @Override
     public void mapBtoA(ProjectDto projectDto, Project project, MappingContext context) {
-        if(projectDto.getProjectId() != null){
+        if (projectDto.getProjectId() != null) {
             project.setId(projectDto.getProjectId());
         }
         project.setCreatedAt(LocalDateTime.now());
@@ -66,7 +66,7 @@ public class ProjectToProjectDtoMapper extends DefaultCustomMapper<Project, Proj
         project.setUserProjectRoleLink(createUserProjectRoleLink(project, projectDto.getUserProjectRoleDto()));
     }
 
-    private Set<UserProjectRoleLink> createUserProjectRoleLink(final Project project, final Set<UserProjectRoleDto> userProjectRoleDtoSet){
+    private Set<UserProjectRoleLink> createUserProjectRoleLink(final Project project, final Set<UserProjectRoleDto> userProjectRoleDtoSet) {
         final Set<UserProjectRoleLink> userProjectRoleSet = new HashSet<>();
 
         userProjectRoleDtoSet.forEach(userProjectRoleDto -> {

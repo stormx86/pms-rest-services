@@ -29,12 +29,10 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
     @Override
     @Transactional
     public List<ProjectRoleDto> findAllRoleNames() {
-        final List<ProjectRoleDto> projectRoles = projectRoleRepo.findAll()
+        return projectRoleRepo.findAll()
                 .stream()
                 .map(role -> mapper.map(role, ProjectRoleDto.class))
                 .collect(Collectors.toList());
-
-        return projectRoles;
     }
 
     @Override
@@ -45,20 +43,20 @@ public class ProjectRoleServiceImpl implements ProjectRoleService {
 
         return projectRoleRepo.findAll()
                 .stream()
-                .map(role-> mapper.map(role, ProjectRoleDto.class))
+                .map(role -> mapper.map(role, ProjectRoleDto.class))
                 .collect(toList());
     }
 
     @Override
     @Transactional
-    public List<ProjectRoleDto> deleteProjectRole(final Integer projectRoleId){
-        final ProjectRole projectRoleForDelete =  projectRoleRepo.findById(projectRoleId)
+    public List<ProjectRoleDto> deleteProjectRole(final Integer projectRoleId) {
+        final ProjectRole projectRoleForDelete = projectRoleRepo.findById(projectRoleId)
                 .orElseThrow(() -> new EntityNotFoundException("Project Role not found with id: " + projectRoleId));
         projectRoleRepo.delete(projectRoleForDelete);
 
         return projectRoleRepo.findAll()
                 .stream()
-                .map(role-> mapper.map(role, ProjectRoleDto.class))
+                .map(role -> mapper.map(role, ProjectRoleDto.class))
                 .collect(toList());
     }
 }
