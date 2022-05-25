@@ -1,7 +1,5 @@
 package pl.kozhanov.projectmanagementsystem.service.impl;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static pl.kozhanov.projectmanagementsystem.domain.GlobalRole.ROLE_ADMIN;
 import static pl.kozhanov.projectmanagementsystem.service.utils.AuthUtils.getLoggedUserName;
 
 @Service
@@ -41,59 +40,57 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<UserDto> getAllUsers(){
-       return userRepo.findAllByOrderByUsernameAsc()
-               .stream()
-               .map(user-> mapper.map(user, UserDto.class))
-               .collect(toList());
+    public List<UserDto> getAllUsers() {
+        return userRepo.findAllByOrderByUsernameAsc()
+                .stream()
+                .map(user -> mapper.map(user, UserDto.class))
+                .collect(toList());
     }
 
     @Override
     @Transactional
-    public List<UserDto> updateUserRoles(final Integer userId, final UserDto userDto){
-        final User userForUpdate =  userRepo.findById(userId)
+    public List<UserDto> updateUserRoles(final Integer userId, final UserDto userDto) {
+        final User userForUpdate = userRepo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        userForUpdate.setGlobalRoles(userDto.getGlobalRoles());
 
-           //userForUpdate.getGlobalRoles().clear();
-           userForUpdate.setGlobalRoles(userDto.getGlobalRoles());
-
-       return userRepo.findAllByOrderByUsernameAsc()
-               .stream()
-               .map(user-> mapper.map(user, UserDto.class))
-               .collect(toList());
+        return userRepo.findAllByOrderByUsernameAsc()
+                .stream()
+                .map(user -> mapper.map(user, UserDto.class))
+                .collect(toList());
     }
 
     @Override
     @Transactional
-    public List<UserDto> addNewUser(final UserDto userDto){
+    public List<UserDto> addNewUser(final UserDto userDto) {
         final User newUser = mapper.map(userDto, User.class);
 
         userRepo.save(newUser);
 
         return userRepo.findAllByOrderByUsernameAsc()
                 .stream()
-                .map(user-> mapper.map(user, UserDto.class))
+                .map(user -> mapper.map(user, UserDto.class))
                 .collect(toList());
     }
 
     @Override
     @Transactional
-    public List<UserDto> deleteUser(final Integer userId){
-        final User userForDelete =  userRepo.findById(userId)
+    public List<UserDto> deleteUser(final Integer userId) {
+        final User userForDelete = userRepo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
         userRepo.delete(userForDelete);
 
         return userRepo.findAllByOrderByUsernameAsc()
                 .stream()
-                .map(user-> mapper.map(user, UserDto.class))
+                .map(user -> mapper.map(user, UserDto.class))
                 .collect(toList());
     }
 
     @Override
     @Transactional
-    public void resetUserPassword(final Integer userId){
-        final User userForUpdate =  userRepo.findById(userId)
+    public void resetUserPassword(final Integer userId) {
+        final User userForUpdate = userRepo.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with id: " + userId));
 
         userForUpdate.setPassword(passwordEncoder.encode(userForUpdate.getUsername()));
@@ -105,8 +102,7 @@ public class UserServiceImpl implements UserService {
         final User user = userRepo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        if(!user.getUsername().equals(getLoggedUserName()))
-        {
+        if (!user.getUsername().equals(getLoggedUserName())) {
             throw new SecurityException("Access not allowed");
         }
         return mapper.map(user, UserDto.class);
@@ -131,8 +127,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean isAdmin() {
-        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
+    public boolean isAdmin(final User user) {
+        return user.getGlobalRoles().contains(ROLE_ADMIN);
     }
 }

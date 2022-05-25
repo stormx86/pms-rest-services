@@ -25,5 +25,5 @@ public interface UserService {
 
     List<String> findByUsernameLike(String term);
 
-    boolean isAdmin();
+    boolean isAdmin(User user);
 }

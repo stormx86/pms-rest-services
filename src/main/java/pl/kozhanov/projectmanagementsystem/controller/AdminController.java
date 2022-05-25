@@ -43,7 +43,7 @@ public class AdminController {
 
     @PutMapping(value = "/users/edit", consumes = "application/json", produces = "application/json")
     public ResponseEntity<List<UserDto>> updateUserGlobalRoles(@RequestParam(value = "userId") final Integer userId,
-                                                         @RequestBody final UserDto userDto) {
+                                                               @RequestBody final UserDto userDto) {
 
         final List<UserDto> updatedUserList = userService.updateUserRoles(userId, userDto);
         LOGGER.info("Updating roles for user with id: " + userId);
@@ -51,7 +51,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/users/add", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<List<UserDto>> addNewUser(@RequestBody @Validated(value= ValidationGroups.NewUser.class) final UserDto userDto) {
+    public ResponseEntity<List<UserDto>> addNewUser(@RequestBody @Validated(value = ValidationGroups.NewUser.class) final UserDto userDto) {
 
         final List<UserDto> updatedUserList = userService.addNewUser(userDto);
         LOGGER.info("Adding new user with name: " + userDto.getUsername());
@@ -76,7 +76,7 @@ public class AdminController {
 
     @PostMapping(value = "/roles/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<List<ProjectRoleDto>> addNewProjectRole(
-            @RequestBody @Validated(value= ValidationGroups.NewProjectRole.class) final ProjectRoleDto projectRoleDto) {
+            @RequestBody @Validated(value = ValidationGroups.NewProjectRole.class) final ProjectRoleDto projectRoleDto) {
 
         final List<ProjectRoleDto> updatedProjectRolesList = projectRoleService.addNewProjectRole(projectRoleDto);
         LOGGER.info("Adding new project role with name: " + projectRoleDto.getRoleName());

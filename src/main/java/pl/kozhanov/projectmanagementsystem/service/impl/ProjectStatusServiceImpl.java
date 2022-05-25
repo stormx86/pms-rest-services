@@ -2,7 +2,6 @@ package pl.kozhanov.projectmanagementsystem.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.kozhanov.projectmanagementsystem.domain.Project;
 import pl.kozhanov.projectmanagementsystem.domain.ProjectStatus;
 import pl.kozhanov.projectmanagementsystem.dto.NewProjectStatusRequestDto;
 import pl.kozhanov.projectmanagementsystem.dto.ProjectStatusDto;
@@ -39,10 +38,8 @@ public class ProjectStatusServiceImpl implements ProjectStatusService {
     @Override
     @Transactional
     public String setNewProjectStatus(final NewProjectStatusRequestDto newProjectStatusRequestDto) {
-        final Project project = projectRepo.getById(newProjectStatusRequestDto.getProjectId());
-        final ProjectStatus newProjectProjectStatus = ProjectStatus.valueOf(newProjectStatusRequestDto.getNewStatus());
-
-        project.setStatus(newProjectProjectStatus);
-        return newProjectProjectStatus.name();
+        projectRepo.findById(newProjectStatusRequestDto.getProjectId())
+                .ifPresent(project -> project.setStatus(ProjectStatus.valueOf(newProjectStatusRequestDto.getNewStatus())));
+        return newProjectStatusRequestDto.getNewStatus();
     }
 }

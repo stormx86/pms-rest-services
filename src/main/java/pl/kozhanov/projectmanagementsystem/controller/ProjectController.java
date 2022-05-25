@@ -11,6 +11,7 @@ import pl.kozhanov.projectmanagementsystem.service.ProjectRoleService;
 import pl.kozhanov.projectmanagementsystem.service.ProjectService;
 
 import javax.validation.Valid;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -32,18 +33,19 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(produces = "application/json")
-    public ResponseEntity<List<ProjectDto>> getAllProjects() {
+    public ResponseEntity<List<ProjectDto>> getProjects(@RequestHeader(value = "userId") final Integer userId) {
 
-        final List<ProjectDto> projectList = projectService.findProjects();
+        final List<ProjectDto> projectList = projectService.findProjects(userId);
         LOGGER.info("Retrieving the whole project list.");
         return isEmpty(projectList) ? ResponseEntity.noContent().build() : ResponseEntity.ok(projectList);
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping(value = "/project", produces = "application/json")
-    public ResponseEntity<ProjectDto> getProjectDetails(@RequestParam(value = "projectId") final Integer projectId) {
+    public ResponseEntity<ProjectDto> getProjectDetails(@RequestHeader(value = "userId") final Integer userId,
+                                                        @RequestParam(value = "projectId") final Integer projectId) throws AccessDeniedException {
 
-        final ProjectDto project = projectService.findProjectById(projectId);
+        final ProjectDto project = projectService.findProjectById(projectId, userId);
         LOGGER.info("Retrieving project details for project id: " + projectId);
         return ResponseEntity.ok(project);
     }
