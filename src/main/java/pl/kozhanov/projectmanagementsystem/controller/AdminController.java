@@ -33,14 +33,6 @@ public class AdminController {
         this.projectRoleService = projectRoleService;
     }
 
-    @GetMapping(value = "/users", produces = "application/json")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-
-        final List<UserDto> userList = userService.getAllUsers();
-        LOGGER.info("Retrieving all users.");
-        return isEmpty(userList) ? ResponseEntity.noContent().build() : ResponseEntity.ok(userList);
-    }
-
     @PutMapping(value = "/users/edit", consumes = "application/json", produces = "application/json")
     public ResponseEntity<List<UserDto>> updateUserGlobalRoles(@RequestParam(value = "userId") final Integer userId,
                                                                @RequestBody final UserDto userDto) {
