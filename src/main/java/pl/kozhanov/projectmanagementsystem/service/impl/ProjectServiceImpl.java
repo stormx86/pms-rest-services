@@ -51,7 +51,8 @@ public class ProjectServiceImpl implements ProjectService {
         final Project project = projectRepo.findById(projectId).orElseThrow(() -> new EntityNotFoundException(
                 "Project with id " + projectId + "was not found"));
 
-        if (!isUserMember(project, currentUser.getUsername())) throw new AccessDeniedException("403 Forbidden");
+        if (!isUserMember(project, currentUser.getUsername()) && !userService.isAdmin(currentUser))
+            throw new AccessDeniedException("403 Forbidden");
 
         return mapper.map(project, ProjectDto.class);
     }
