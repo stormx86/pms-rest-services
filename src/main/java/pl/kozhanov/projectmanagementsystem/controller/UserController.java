@@ -10,6 +10,10 @@ import pl.kozhanov.projectmanagementsystem.dto.UserDto;
 import pl.kozhanov.projectmanagementsystem.service.UserService;
 import pl.kozhanov.projectmanagementsystem.service.validation.groups.ValidationGroups;
 
+import java.util.List;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/user")
@@ -38,5 +42,13 @@ public class UserController {
         final UserDto userProfile = userService.changeUserPassword(userDto);
         LOGGER.info("Changing password for user with id: " + userDto.getUserId());
         return ResponseEntity.ok(userProfile);
+    }
+
+    @GetMapping(value = "/users", produces = "application/json")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+
+        final List<UserDto> userList = userService.getAllUsers();
+        LOGGER.info("Retrieving all users.");
+        return isEmpty(userList) ? ResponseEntity.noContent().build() : ResponseEntity.ok(userList);
     }
 }

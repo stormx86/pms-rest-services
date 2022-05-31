@@ -118,14 +118,6 @@ public class UserServiceImpl implements UserService {
         return mapper.map(user, UserDto.class);
     }
 
-    //usernames for autocomplete
-    @Override
-    @Transactional
-    public List<String> findByUsernameLike(final String term) {
-        return userRepo.findByUsernameLike(term);
-    }
-
-
     @Override
     public boolean isAdmin(final User user) {
         return user.getGlobalRoles().contains(ROLE_ADMIN);

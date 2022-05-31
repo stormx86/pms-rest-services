@@ -23,7 +23,5 @@ public interface UserService {
 
     UserDto changeUserPassword(UserDto userDto);
 
-    List<String> findByUsernameLike(String term);
-
     boolean isAdmin(User user);
 }
