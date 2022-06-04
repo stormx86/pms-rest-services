@@ -1,7 +1,7 @@
 # Project Management System (pms-rest-services)
 > Application provides basic functionality for performing management actions on the projects(in a general understanding) via web interface.
 > This is completely redesigned RESTfull API version. 
-> Previously existed FE part has been cut off and allocated to a separate module implemented from scratch with React.
+> Previously existed FE part has been cut off and allocated to a [separate module implemented from scratch with React](https://github.com/stormx86/pms-ui).
 
 ## Table of contents
 * [General info](#general-info)
